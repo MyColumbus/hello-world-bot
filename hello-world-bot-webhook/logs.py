@@ -29,7 +29,7 @@ class HWLogs:
         logging.basicConfig(filename = './helloworld.logs',
                             level = log_level,
                             format = LOG_FORMAT)
-        logger = logging.getLogger()
+        self.logger = logging.getLogger()
 
     def __del__(self):
-        del logger
+        del self.logger

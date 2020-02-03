@@ -8,8 +8,6 @@
 import psycopg2
 import logging
 
-
-cbml = CBML()
 logger = logging.getLogger()
 
 
