@@ -20,7 +20,7 @@ class HWDB:
         self.hwdb_conn = None
         self.hwdb_cur = None
         self.hwdb_conn_open()
-        logger.info('Database version {0}'.format(self.db_version()[0]))
+        logger.info('Database version {0}'.format(self.hwdb_version()[0]))
 
 
     def __del__(self):

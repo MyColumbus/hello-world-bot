@@ -11,7 +11,6 @@ import logging
 import sys
 import pytz
 import json
-from pytz import timezone
 from datetime import datetime
 from itertools import combinations
 
@@ -60,14 +59,12 @@ class HWBase:
         self.EUROPE = []
         self.ASIA = ['India', 'Malaysia', 'SriLanka', 'Bhutan', 'Indonesia', 'Myanmar', 'Nepal', 'Singapore', 'Thailand', 'UnitedArabEmirates', 'Vietnam']
 
-        self.df_dest = pd.read_csv('data/Destination.csv', low_memory=False, encoding='utf-8')
-        self.df_tsights = pd.read_csv('data/TopSights.csv', low_memory=False, encoding='utf-8')
+        self.df_dest = pd.read_csv('data/Destination_v0.1.csv', low_memory=False, encoding='utf-8')
+        self.df_tsights = pd.read_csv('data/TopSights_v0.1.csv', low_memory=False, encoding='utf-8')
 
-        self.df_month_data = pd.read_csv(self.home + 'data/Months_v2.0.csv', low_memory=False, encoding='utf-8')
-        self.df_timezones = pd.read_csv(self.home + 'data/Time_v2.0.csv', low_memory=False, encoding='utf-8')
-        self.df_images = pd.read_csv(self.home + 'data/Images_v2.0.csv', low_memory=False, encoding='utf-8')
-        self.df_country_info = pd.read_csv(self.home + 'data/country_info_v2.0.csv', low_memory=False, encoding='utf-8')
-        self.df_lp_url = pd.read_csv(self.home + 'data/LP_urls.csv', low_memory=False, encoding='utf-8')
+        self.df_month_data = pd.read_csv(self.home + 'data/Months_v1.0.csv', low_memory=False, encoding='utf-8')
+        self.df_country_info = pd.read_csv(self.home + 'data/country_info_v1.0.csv', low_memory=False, encoding='utf-8')
+        self.df_lp_url = pd.read_csv(self.home + 'data/LP_urls_v1.0.csv', low_memory=False, encoding='utf-8')
 
         # Init functions.
         self.hwb_dataframe_processing()
@@ -365,16 +362,6 @@ class HWBase:
         return info_dict
 
 
-    def hwb_curr_local_time(self, country):
-        """
-        Return local time for that country
-        """
-        str_tz = self.df_timezones.loc[self.df_timezones['Country'] == country, 'Timezone'].iloc[0]
-        country_tz = timezone(str_tz)
-        local_date = datetime.now(country_tz)
-        return local_date.strftime('%Y-%m-%d %H:%M:%S')
-
-
     def hwb_country_info_by_field(self, country, field):
         """
         Return value for a specific input field.
@@ -514,20 +501,28 @@ class HWBase:
         return ret_suggestions, ret_data, err
 
 
+#hwbase = HWBase()
+#exp = ['Nature', 'Beaches', 'Desert', 'Yoga']
+#top_s, data, err = hwbase.hwb_find_top_countries_for_experiences(exp)
+#logger.debug('Data {0}'.format(data))
+#logger.debug('Suggestions {0}'.format(top_s))
+#logger.debug('========================')
+#top_s, data, err = hwbase.hwb_find_destination_for_experiences(data[0]['Countries'][0], data[0]['Experiences'])
+#logger.debug('Destionation_for_exp {0}'.format(data))
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
+#
+#    # Error serveiry
+#     HWLogs(40)
 
-    # Error serveiry
-     HWLogs(40)
-
-     hwbase = HWBase()
-     exp = ['Nature', 'Beaches', 'Desert', 'Yoga']
-     top_s, data, err = hwbase.hwb_find_top_countries_for_experiences(exp)
-     print('Data {0}'.format(data))
-     print('Suggestions {0}'.format(top_s))
-     print('========================')
-     top_s, data, err = hwbase.hwb_find_destination_for_experiences(data[0]['Countries'][0], data[0]['Experiences'])
-     print('Destionation_for_exp {0}'.format(data))
+#     hwbase = HWBase()
+#     exp = ['Nature', 'Beaches', 'Desert', 'Yoga']
+#     top_s, data, err = hwbase.hwb_find_top_countries_for_experiences(exp)
+#     print('Data {0}'.format(data))
+#     print('Suggestions {0}'.format(top_s))
+#     print('========================')
+#     top_s, data, err = hwbase.hwb_find_destination_for_experiences(data[0]['Countries'][0], data[0]['Experiences'])
+#     print('Destionation_for_exp {0}'.format(data))
 
 

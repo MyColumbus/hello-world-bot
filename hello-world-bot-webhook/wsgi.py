@@ -7,7 +7,6 @@
 
 from bot_entry_point import app
 
-
 if __name__ == '__main__':
     major = sys.version_info.major
     if major < 3:
@@ -19,3 +18,4 @@ if __name__ == '__main__':
 
     # run Flask application.
     app.run()
+

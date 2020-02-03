@@ -14,7 +14,9 @@ from telegram_handler import TBOT
 
 app = Flask(__name__)
 api = Api(app)
+
 logger = logging.getLogger()
+teleg = TBOT()
 
 
 ##########################################
@@ -26,15 +28,11 @@ class TestHWorldBotWebhook(Resource):
     Test Hello World Webhook: This hook is for Test Hello World bot interface.
     """
     def __init__(self):
-        # Telegram Object
-        self.teleg = TBOT()
-        # Logging object
-        self.logger = logging.getLogger()
+        pass
+
 
     def __del__(self):
-        # Clean up objects.
-        del self.teleg
-        del self.logger
+        pass
 
 
     def post(self):
@@ -49,14 +47,14 @@ class TestHWorldBotWebhook(Resource):
             return 'json error'
 
         platform = req.get('originalDetectIntentRequest').get('source')
-        self.logger.debug('New Message -- platform={0} action={1}'.format(platform, action))
-        self.logger.debug('Message Dump ==> \n{0}'.format(json.dumps(req, indent=4)))
+        logger.debug('New Message -- platform={0} action={1}'.format(platform, action))
+        logger.debug('Message Dump ==> \n{0}'.format(json.dumps(req, indent=4)))
 
         if platform == 'telegram':
-            self.teleg.process_telegram_req(req)
+            teleg.tbot_process_telegram_req(req)
 
         else:
-            self.logger.error('Unsupported platform')
+            logger.error('Unsupported platform')
 
 
 #########################################

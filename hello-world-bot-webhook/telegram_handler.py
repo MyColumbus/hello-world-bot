@@ -19,7 +19,7 @@ from telegram import InlineKeyboardButton,InlineKeyboardMarkup,KeyboardButton,Re
 
 
 class TBOT:
-    __tbot_token = '629163526:AAGsj8KSmqYAilYjXwANoAgp9TH3WLfwfNM'
+    __tbot_token = '1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U'
     __flag_offset = 127462 - ord('A')
 
     def __init__(self):
@@ -38,9 +38,9 @@ class TBOT:
         self.all_experiences = self.hwbase.hwb_all_experiences()
         self.all_euro_countries = self.hwbase.hwb_all_countries('EUROPE')
         self.all_asia_countries = self.hwbase.hwb_all_countries('ASIA')
-        self.all_euro_countries.remove('Monaco')
-        self.all_euro_countries.remove('Ireland')
-        self.all_euro_countries.remove('SanMarino')
+        #self.all_euro_countries.remove('Monaco')
+        #self.all_euro_countries.remove('Ireland')
+        #self.all_euro_countries.remove('SanMarino')
 
 
     def __del__(self):
@@ -605,6 +605,7 @@ class TBOT:
 
 
 
+
     def tbot_process_telegram_intents(self, query_result, payload):
         """
         This method parse Telegram specific WITHOUT callback intents.
@@ -629,6 +630,12 @@ class TBOT:
 
             self.updater.bot.sendMessage(chat_id=chat_id,
                     text='\n\n*' + country + ' :* ' + when_to_visit_rsp, parse_mode=telegram.ParseMode.MARKDOWN)
+
+        elif (query_result.get('action') == 'settings.country-name'):
+            user_country = query_result.get('parameters').get('geo-country')
+            chat_id = payload.get('from').get('id')
+            self.hwdb.hwdb_columbus_user_bucketlist_upsert(chat_id, 'NULL', 'NULL', 'NULL', user_country, 'NULL')
+            self.logger.debug('User updated his/her native country {0}'.format(user_country))
 
         else:
             self.logger.debug('Bad message received')
