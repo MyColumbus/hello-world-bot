@@ -2,7 +2,7 @@
 HelloWorld Bot backend implementation for Telegram. It also contains all the data for deployment.  
 
 # Data Naming convention
-Till date there is single version of collected data and the naming convention is as `Destination_v<major.minor>`. Where `major` defines addition of new columns and drastic change in the number of rows and `minor` signifies slight change in the data content.
+Till date there is single version of collected data and the naming convention is as `Destination_<major_minor>`. Where `major` defines addition of new columns and drastic change in the number of rows and `minor` signifies slight change in the data content.
 
 Data can be found in `data` directory with their respective version number. 
 
