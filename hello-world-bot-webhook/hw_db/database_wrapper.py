@@ -97,7 +97,7 @@ class HWDB:
             logger.error('DB commit failed with error {0}'.format(e.pgerror))
 
 
-    def hwdb_user_session_upsert(self, uid, country, destination, cat, op):
+    def hwdb_user_session_upsert(self, uid, country, destination, cat, continent, op):
         """
         User session Inser/update/Delete can be done using this API.
         Input: user_id, country. destination, category, operation.
@@ -108,8 +108,9 @@ class HWDB:
                 country = country if country else 'NULL'
                 destination = destination if destination else 'NULL'
                 cat = cat if cat else 'NULL'
+                continent = continent if continent else 'NULL'
 
-                self.hwdb_cur.execute("CALL UpsertSession(%s, %s, %s, %s, %s)", (uid, country, destination, cat, op))
+                self.hwdb_cur.execute("CALL UpsertSession(%s, %s, %s, %s, %s, %s)", (uid, country, destination, cat, continent, op))
                 self.hwdb_conn.commit()
                 logger.info('Successfully performed operation {0} in user session id {1}'.format(op, uid))
             else:
@@ -127,17 +128,23 @@ class HWDB:
         rec = {}
         rec['category'] = []
         rec['country'] = 'NULL'
+        rec['continent'] = 'NULL'
         select_str = ''
+
         try:
             if not self.hwdb_conn.closed:
-                select_str = 'Select * from SelectSession(%s)' % uid
+                select_str = 'Select * from SelectSession(%s)' % int(uid)
                 logger.debug(select_str)
                 self.hwdb_cur.execute(select_str)
                 result = self.hwdb_cur.fetchall()
+                logger.debug('DB user session select result {0}'.format(result))
+
                 for idx in range(len(result)):
                     if result[idx][0] == 'category':
                         if result[idx][1] != 'NULL':
                             rec[result[idx][0]].append(result[idx][1])
+                    elif result[idx][0] == 'continent':
+                        rec[result[idx][0]] = result[idx][1]
                     else:
                         rec[result[idx][0]] = result[idx][1]
             else:
@@ -157,7 +164,7 @@ class HWDB:
         select_str = ''
         try:
             if not self.hwdb_conn.closed:
-                select_str = 'Call DeleteSession(%s)' % uid
+                select_str = 'Call DeleteSession(%s)' % int(uid)
                 logger.debug(select_str)
                 self.hwdb_cur.execute(select_str)
                 self.hwdb_conn.commit()

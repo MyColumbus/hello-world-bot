@@ -1,0 +1,1517 @@
+DEBUG 2020-02-03 05:55:40,073 (11468/140279517071168) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f95492ce978>
+INFO 2020-02-03 05:55:40,554 (11468/140279517071168) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+ERROR 2020-02-03 05:55:40,555 (11468/140279517071168) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 88, in view
+    self = view.view_class(*class_args, **class_kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 32, in __init__
+    self.teleg = TBOT()
+  File "/home/mdeore/hwbot/telegram_handler.py", line 31, in __init__
+    self.hwdb = HWDB()
+  File "/home/mdeore/hwbot/hw_db/database_wrapper.py", line 23, in __init__
+    logger.info('Database version {0}'.format(self.db_version()[0]))
+AttributeError: 'HWDB' object has no attribute 'db_version'
+INFO 2020-02-03 05:55:40,557 (11468/140279517071168) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 05:56:24,489 (11467/140279517071168) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f95492cf908>
+DEBUG 2020-02-03 05:56:24,599 (11465/140279517071168) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f95492cf8d0>
+INFO 2020-02-03 05:56:24,979 (11467/140279517071168) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+ERROR 2020-02-03 05:56:24,980 (11467/140279517071168) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 88, in view
+    self = view.view_class(*class_args, **class_kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 32, in __init__
+    self.teleg = TBOT()
+  File "/home/mdeore/hwbot/telegram_handler.py", line 31, in __init__
+    self.hwdb = HWDB()
+  File "/home/mdeore/hwbot/hw_db/database_wrapper.py", line 23, in __init__
+    logger.info('Database version {0}'.format(self.db_version()[0]))
+AttributeError: 'HWDB' object has no attribute 'db_version'
+INFO 2020-02-03 05:56:24,983 (11467/140279517071168) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+INFO 2020-02-03 05:56:25,073 (11465/140279517071168) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+ERROR 2020-02-03 05:56:25,074 (11465/140279517071168) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 88, in view
+    self = view.view_class(*class_args, **class_kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 32, in __init__
+    self.teleg = TBOT()
+  File "/home/mdeore/hwbot/telegram_handler.py", line 31, in __init__
+    self.hwdb = HWDB()
+  File "/home/mdeore/hwbot/hw_db/database_wrapper.py", line 23, in __init__
+    logger.info('Database version {0}'.format(self.db_version()[0]))
+AttributeError: 'HWDB' object has no attribute 'db_version'
+INFO 2020-02-03 05:56:25,078 (11465/140279517071168) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 05:59:47,996 (11689/139982058264384) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f50073fc908>
+INFO 2020-02-03 05:59:48,491 (11689/139982058264384) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 05:59:48,644 (11689/139982058264384) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+ERROR 2020-02-03 05:59:49,237 (11689/139982058264384) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 88, in view
+    self = view.view_class(*class_args, **class_kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 32, in __init__
+    self.teleg = TBOT()
+  File "/home/mdeore/hwbot/telegram_handler.py", line 33, in __init__
+    self.hwbase = HWBase()
+  File "/home/mdeore/hwbot/inference.py", line 73, in __init__
+    self.hwb_dataframe_processing()
+  File "/home/mdeore/hwbot/inference.py", line 122, in hwb_dataframe_processing
+    self.df_month_data['MinTemp'] = self.df_month_data['MinTemp'].replace('\u00b0','', regex=True)
+AttributeError: 'HWBase' object has no attribute 'df_month_data'
+INFO 2020-02-03 05:59:49,247 (11689/139982058264384) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 06:41:00,296 (25717/140717950809920) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7ffb5ddce940>
+INFO 2020-02-03 06:41:00,785 (25717/140717950809920) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:41:00,938 (25717/140717950809920) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+ERROR 2020-02-03 06:41:01,536 (25717/140717950809920) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 88, in view
+    self = view.view_class(*class_args, **class_kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 32, in __init__
+    self.teleg = TBOT()
+  File "/home/mdeore/hwbot/telegram_handler.py", line 33, in __init__
+    self.hwbase = HWBase()
+  File "/home/mdeore/hwbot/inference.py", line 67, in __init__
+    self.df_lp_url = pd.read_csv(self.home + 'data/LP_urls.csv', low_memory=False, encoding='utf-8')
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/pandas/io/parsers.py", line 676, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/pandas/io/parsers.py", line 448, in _read
+    parser = TextFileReader(fp_or_buf, **kwds)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/pandas/io/parsers.py", line 880, in __init__
+    self._make_engine(self.engine)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/pandas/io/parsers.py", line 1114, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/pandas/io/parsers.py", line 1874, in __init__
+    src = open(src, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: 'data/LP_urls.csv'
+INFO 2020-02-03 06:41:01,554 (25717/140717950809920) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 06:42:05,270 (25766/139670709434176) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f078969a828>
+INFO 2020-02-03 06:42:05,749 (25766/139670709434176) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:42:05,901 (25766/139670709434176) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 06:42:07,500 (25766/139670709434176) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 06:42:07,500 (25766/139670709434176) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 06:42:07,500 (25766/139670709434176) - telegram_handler.py:36 [__init__] Telegram Initialized
+ERROR 2020-02-03 06:42:07,501 (25766/139670709434176) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 88, in view
+    self = view.view_class(*class_args, **class_kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 32, in __init__
+    self.teleg = TBOT()
+  File "/home/mdeore/hwbot/telegram_handler.py", line 41, in __init__
+    self.all_euro_countries.remove('Monaco')
+ValueError: list.remove(x): x not in list
+INFO 2020-02-03 06:42:07,503 (25766/139670709434176) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 06:44:33,134 (25833/139848323495744) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f30e40957b8>
+INFO 2020-02-03 06:44:33,620 (25833/139848323495744) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:44:33,773 (25833/139848323495744) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 06:44:36,353 (25833/139848323495744) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 06:44:36,353 (25833/139848323495744) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 06:44:36,353 (25833/139848323495744) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 06:44:36,354 (25833/139848323495744) - bot_entry_point.py:53 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 06:44:36,355 (25833/139848323495744) - bot_entry_point.py:54 [post] Message Dump ==> 
+{
+    "responseId": "b63a807b-324f-43c5-8327-6a1818d8fbfe-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "lifespanCount": 1,
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "message_id": 82.0,
+                "entities": [
+                    {
+                        "type": "bot_command",
+                        "length": 6.0
+                    }
+                ],
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580712272.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+ERROR 2020-02-03 06:44:36,355 (25833/139848323495744) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 89, in view
+    return self.dispatch_request(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 573, in dispatch_request
+    resp = meth(*args, **kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 57, in post
+    self.teleg.process_telegram_req(req)
+AttributeError: 'TBOT' object has no attribute 'process_telegram_req'
+INFO 2020-02-03 06:44:36,357 (25833/139848323495744) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 06:45:57,278 (25898/140680016488256) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7ff288cd1828>
+INFO 2020-02-03 06:45:57,783 (25898/140680016488256) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:45:57,936 (25898/140680016488256) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 06:46:00,034 (25898/140680016488256) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 06:46:00,034 (25898/140680016488256) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 06:46:00,034 (25898/140680016488256) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 06:46:00,035 (25898/140680016488256) - bot_entry_point.py:53 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 06:46:00,036 (25898/140680016488256) - bot_entry_point.py:54 [post] Message Dump ==> 
+{
+    "responseId": "9fd44922-6ccb-454f-a5cd-90f4fa7c29e6-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "entities": [
+                    {
+                        "type": "bot_command",
+                        "length": 6.0
+                    }
+                ],
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580712356.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "message_id": 83.0
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 06:46:00,036 (25898/140680016488256) - telegram_handler.py:617 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 06:46:00,036 (25898/140680016488256) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 06:46:00,037 (25898/140680016488256) - connectionpool.py:835 [_new_conn] Starting new HTTPS connection (1): api.telegram.org
+DEBUG 2020-02-03 06:46:00,842 (25898/140680016488256) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 675
+DEBUG 2020-02-03 06:46:00,843 (25898/140680016488256) - bot.py:67 [decorator] {'message_id': 84, 'date': 1580712360, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 06:46:00,844 (25898/140680016488256) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 06:46:01,001 (25898/140680016488256) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+INFO 2020-02-03 06:46:01,002 (25898/140680016488256) - database_wrapper.py:71 [hwdb_conn_close] DB connection closed successfully!
+DEBUG 2020-02-03 06:49:34,667 (25980/139808125990720) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f2788141358>
+DEBUG 2020-02-03 06:49:34,753 (25985/139808125990720) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f2788141438>
+DEBUG 2020-02-03 06:49:34,772 (25986/139808125990720) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7f278813e4a8>
+INFO 2020-02-03 06:49:35,156 (25980/139808125990720) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:49:35,233 (25985/139808125990720) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:49:35,243 (25986/139808125990720) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 06:49:35,309 (25980/139808125990720) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 06:49:35,386 (25985/139808125990720) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 06:49:35,396 (25986/139808125990720) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 06:49:41,631 (25980/139808125990720) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 06:49:41,635 (25980/139808125990720) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 06:49:41,635 (25980/139808125990720) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 06:49:42,027 (25985/139808125990720) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 06:49:42,027 (25985/139808125990720) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 06:49:42,028 (25985/139808125990720) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 06:49:42,032 (25986/139808125990720) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 06:49:42,032 (25986/139808125990720) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 06:49:42,032 (25986/139808125990720) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 06:50:54,370 (25986/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 06:50:54,370 (25986/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "6226bae3-efd5-4b63-ba88-36668e6d2015-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580712653.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "message_id": 85.0,
+                "entities": [
+                    {
+                        "length": 6.0,
+                        "type": "bot_command"
+                    }
+                ]
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 06:50:54,370 (25986/139808125990720) - telegram_handler.py:617 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 06:50:54,371 (25986/139808125990720) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 06:50:54,372 (25986/139808125990720) - connectionpool.py:835 [_new_conn] Starting new HTTPS connection (1): api.telegram.org
+DEBUG 2020-02-03 06:50:55,183 (25986/139808125990720) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 675
+DEBUG 2020-02-03 06:50:55,184 (25986/139808125990720) - bot.py:67 [decorator] {'message_id': 86, 'date': 1580712655, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 06:50:55,185 (25986/139808125990720) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 06:50:55,341 (25986/139808125990720) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 06:52:00,713 (25985/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 06:52:00,713 (25985/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "774704d1-ae09-4c85-8a58-b069c083d269-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580712719.0,
+                "from": {
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en",
+                    "last_name": "Deore"
+                },
+                "message_id": 87.0,
+                "entities": [
+                    {
+                        "type": "bot_command",
+                        "length": 6.0
+                    }
+                ]
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 06:52:00,714 (25985/139808125990720) - telegram_handler.py:617 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 06:52:00,714 (25985/139808125990720) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 06:52:00,716 (25985/139808125990720) - connectionpool.py:835 [_new_conn] Starting new HTTPS connection (1): api.telegram.org
+DEBUG 2020-02-03 06:52:01,530 (25985/139808125990720) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 675
+DEBUG 2020-02-03 06:52:01,531 (25985/139808125990720) - bot.py:67 [decorator] {'message_id': 88, 'date': 1580712721, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 06:52:01,532 (25985/139808125990720) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 06:52:01,688 (25985/139808125990720) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 06:52:04,602 (25980/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 06:52:04,602 (25980/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "190c1a9f-5322-4618-8cd0-0b3a87b814ba-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "message_id": 89.0,
+                "entities": [
+                    {
+                        "type": "bot_command",
+                        "length": 6.0
+                    }
+                ],
+                "chat": {
+                    "id": "983577319",
+                    "type": "private"
+                },
+                "text": "/start",
+                "date": 1580712723.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 06:52:04,603 (25980/139808125990720) - telegram_handler.py:617 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 06:52:04,603 (25980/139808125990720) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 06:52:04,604 (25980/139808125990720) - connectionpool.py:835 [_new_conn] Starting new HTTPS connection (1): api.telegram.org
+DEBUG 2020-02-03 06:52:05,411 (25980/139808125990720) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 675
+DEBUG 2020-02-03 06:52:05,412 (25980/139808125990720) - bot.py:67 [decorator] {'message_id': 90, 'date': 1580712725, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 06:52:05,413 (25980/139808125990720) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 06:52:05,568 (25980/139808125990720) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 06:52:13,874 (25985/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 06:52:13,875 (25985/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "692fbfb6-729f-4153-a193-1b8fbd471357-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "entities": [
+                    {
+                        "type": "bot_command",
+                        "length": 6.0
+                    }
+                ],
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580712732.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "message_id": 91.0
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 06:52:13,875 (25985/139808125990720) - telegram_handler.py:617 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 06:52:13,875 (25985/139808125990720) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 06:52:14,226 (25985/139808125990720) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 675
+DEBUG 2020-02-03 06:52:14,227 (25985/139808125990720) - bot.py:67 [decorator] {'message_id': 92, 'date': 1580712734, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 06:52:14,227 (25985/139808125990720) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 06:52:14,456 (25985/139808125990720) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 06:52:24,051 (25986/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.bucket_list_show_ops
+DEBUG 2020-02-03 06:52:24,051 (25986/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "82429e12-7108-4ca3-9a25-1926f3987e8a-426bc00a",
+    "queryResult": {
+        "queryText": "Show my wish list",
+        "action": "input.bucket_list_show_ops",
+        "parameters": {
+            "bucketlist_ops": "Show",
+            "bucketlist": "bucketlist"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        ""
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "bucketlist_ops": "Show",
+                    "bucketlist_ops.original": "Show",
+                    "bucketlist": "bucketlist",
+                    "bucketlist.original": "wish list"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/1bf00178-b440-458d-bf38-2f9ea7d975e9",
+            "displayName": "show_bucketlist"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "update_id": "845400728",
+                "callback_query": {
+                    "id": "4224432419825068586",
+                    "message": {
+                        "date": 1580712734.0,
+                        "from": {
+                            "is_bot": true,
+                            "id": 1057694309.0,
+                            "first_name": "columbus_find",
+                            "username": "columbus_find_bot"
+                        },
+                        "message_id": 92.0,
+                        "entities": [
+                            {
+                                "type": "bold",
+                                "length": 10.0,
+                                "offset": 51.0
+                            },
+                            {
+                                "offset": 65.0,
+                                "type": "bold",
+                                "length": 13.0
+                            }
+                        ],
+                        "chat": {
+                            "type": "private",
+                            "id": "983577319"
+                        },
+                        "text": "Hello Milind,\nHow would you like to explore places by country or by experience."
+                    },
+                    "from": {
+                        "language_code": "en",
+                        "last_name": "Deore",
+                        "id": 983577319.0,
+                        "first_name": "Milind",
+                        "username": "MilindDeore"
+                    },
+                    "data": "Show my wish list"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 06:52:24,052 (25986/139808125990720) - telegram_handler.py:537 [tbot_process_telegram_callback_intents] callback data - Show my wish list
+DEBUG 2020-02-03 06:52:24,052 (25986/139808125990720) - database_wrapper.py:235 [hwdb_bucketlist_select] Select * from SelectBucketList(983577319)
+DEBUG 2020-02-03 06:52:24,207 (25986/139808125990720) - telegram_handler.py:474 [tbot_bucketlist_processing] [
+    {
+        "name": "Milind Deore",
+        "country": "France",
+        "destination": "Vence",
+        "category": "NULL",
+        "ttd": "NULL",
+        "email": "NULL",
+        "native_country": "NULL"
+    },
+    {
+        "name": "Milind Deore",
+        "country": "Iceland",
+        "destination": "\u00cdsafjar\u00f0ardj\u00fap",
+        "category": "NULL",
+        "ttd": "NULL",
+        "email": "NULL",
+        "native_country": "NULL"
+    },
+    {
+        "name": "Milind Deore",
+        "country": "Iceland",
+        "destination": "Grindavik",
+        "category": "NULL",
+        "ttd": "NULL",
+        "email": "NULL",
+        "native_country": "NULL"
+    },
+    {
+        "name": "Milind Deore",
+        "country": "Poland",
+        "destination": "Oswiecim",
+        "category": "NULL",
+        "ttd": "NULL",
+        "email": "NULL",
+        "native_country": "NULL"
+    },
+    {
+        "name": "Milind Deore",
+        "country": "Czechia",
+        "destination": "Lu\u017en\u00e1",
+        "category": "NULL",
+        "ttd": "NULL",
+        "email": "NULL",
+        "native_country": "NULL"
+    }
+]
+ERROR 2020-02-03 06:52:24,207 (25986/139808125990720) - app.py:1891 [log_exception] Exception on /test_hworldbot_webhook [POST]
+Traceback (most recent call last):
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1949, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/app.py", line 1935, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 458, in wrapper
+    resp = resource(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask/views.py", line 89, in view
+    return self.dispatch_request(*args, **kwargs)
+  File "/home/mdeore/hwbot/hwbot/lib/python3.6/site-packages/flask_restful/__init__.py", line 573, in dispatch_request
+    resp = meth(*args, **kwargs)
+  File "/home/mdeore/hwbot/bot_entry_point.py", line 54, in post
+    teleg.tbot_process_telegram_req(req)
+  File "/home/mdeore/hwbot/telegram_handler.py", line 659, in tbot_process_telegram_req
+    self.tbot_process_telegram_callback_intents(query_result, payload)
+  File "/home/mdeore/hwbot/telegram_handler.py", line 551, in tbot_process_telegram_callback_intents
+    self.tbot_bucketlist_processing(query_result, payload)
+  File "/home/mdeore/hwbot/telegram_handler.py", line 490, in tbot_bucketlist_processing
+    c_url = cbml.cbml_lonely_planet_urls(country, destination)
+NameError: name 'cbml' is not defined
+DEBUG 2020-02-03 07:37:34,252 (25985/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=None
+DEBUG 2020-02-03 07:37:34,253 (25985/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "0f84dd56-9fd4-45ef-bc78-d6b56dc690ea-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_SETTINGS",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        ""
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_settings"
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/551d44d0-4807-43bf-b0ad-df2f62680035",
+            "displayName": "settings"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "message_id": 93.0,
+                "entities": [
+                    {
+                        "type": "bot_command",
+                        "length": 9.0
+                    }
+                ],
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/settings",
+                "date": 1580715453.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 07:37:34,253 (25985/139808125990720) - telegram_handler.py:634 [tbot_process_telegram_intents] Bad message received
+DEBUG 2020-02-03 08:15:54,329 (25985/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.settings-email-id
+DEBUG 2020-02-03 08:15:54,330 (25985/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "775932d5-3b3d-485c-b8c0-2653112c9471-426bc00a",
+    "queryResult": {
+        "queryText": "abc@gmail.com",
+        "action": "settings.settings-email-id",
+        "parameters": {
+            "email": "abc@gmail.com"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks! I will keep you updated with latest.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks! I will keep you updated with latest."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "parameters": {
+                    "geo-country": "Poland",
+                    "geo-country.original": "Poland",
+                    "email": "abc@gmail.com",
+                    "email.original": "abc@gmail.com"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-country-name",
+                "lifespanCount": 1,
+                "parameters": {
+                    "geo-country": "Poland",
+                    "geo-country.original": "Poland",
+                    "email": "abc@gmail.com",
+                    "email.original": "abc@gmail.com"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "email": "abc@gmail.com",
+                    "email.original": "abc@gmail.com"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/274fae04-d064-453b-8fa4-8e5b1723748a",
+            "displayName": "settings - email-ID"
+        },
+        "intentDetectionConfidence": 0.8648639,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "text": "abc@gmail.com",
+                "date": 1580717752.0,
+                "from": {
+                    "language_code": "en",
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore"
+                },
+                "message_id": 113.0,
+                "entities": [
+                    {
+                        "length": 13.0,
+                        "type": "email"
+                    }
+                ],
+                "chat": {
+                    "id": "983577319",
+                    "type": "private"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 08:15:54,330 (25985/139808125990720) - telegram_handler.py:634 [tbot_process_telegram_intents] Bad message received
+DEBUG 2020-02-03 08:17:20,388 (25980/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 08:17:20,389 (25980/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "709f8f33-7966-4282-8248-ac336b08e032-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "lifespanCount": 1,
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "message_id": 121.0,
+                "entities": [
+                    {
+                        "length": 6.0,
+                        "type": "bot_command"
+                    }
+                ],
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580717839.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 08:17:20,389 (25980/139808125990720) - telegram_handler.py:617 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 08:17:20,390 (25980/139808125990720) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 08:17:20,390 (25980/139808125990720) - connectionpool.py:243 [_get_conn] Resetting dropped connection: api.telegram.org
+DEBUG 2020-02-03 08:17:21,199 (25980/139808125990720) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 676
+DEBUG 2020-02-03 08:17:21,201 (25980/139808125990720) - bot.py:67 [decorator] {'message_id': 122, 'date': 1580717841, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 08:17:21,201 (25980/139808125990720) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 08:17:21,431 (25980/139808125990720) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 08:36:35,670 (25985/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.settings-email-id
+DEBUG 2020-02-03 08:36:35,671 (25985/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "587e98a7-5339-4525-b16d-6cbc67d19253-426bc00a",
+    "queryResult": {
+        "queryText": "my email ID is Milind@hotmail.com",
+        "action": "settings.settings-email-id",
+        "parameters": {
+            "email": "Milind@hotmail.com"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks for sharing your details, this will help me keep you updated.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks for sharing your details, this will help me keep you updated."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-country-name",
+                "parameters": {
+                    "geo-country": "Poland",
+                    "geo-country.original": "poland",
+                    "email": "Milind@hotmail.com",
+                    "email.original": "Milind@hotmail.com"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "email": "Milind@hotmail.com",
+                    "email.original": "Milind@hotmail.com"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/274fae04-d064-453b-8fa4-8e5b1723748a",
+            "displayName": "settings - email-ID"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "my email ID is Milind@hotmail.com",
+                "date": 1580718994.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "message_id": 129.0,
+                "entities": [
+                    {
+                        "length": 18.0,
+                        "offset": 15.0,
+                        "type": "email"
+                    }
+                ]
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 08:36:35,672 (25985/139808125990720) - telegram_handler.py:634 [tbot_process_telegram_intents] Bad message received
+DEBUG 2020-02-03 08:42:33,796 (25980/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.settings-country-name
+DEBUG 2020-02-03 08:42:33,797 (25980/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "1d1bcbdb-62f3-4ec2-9dfc-eb27630c3102-426bc00a",
+    "queryResult": {
+        "queryText": "india a",
+        "action": "settings.settings-country-name",
+        "parameters": {
+            "geo-country": "India"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks for details! This will help me to keep you updated.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks for details! This will help me to keep you updated."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "lifespanCount": 1,
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "geo-country": "India",
+                    "geo-country.original": "india"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "parameters": {
+                    "geo-country": "India",
+                    "geo-country.original": "india"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/7c1da975-211a-48f4-be2e-4634fc8be44d",
+            "displayName": "settings - country - name"
+        },
+        "intentDetectionConfidence": 0.659937,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "date": 1580719353.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "message_id": 137.0,
+                "text": "india a"
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 08:42:33,797 (25980/139808125990720) - telegram_handler.py:634 [tbot_process_telegram_intents] Bad message received
+DEBUG 2020-02-03 08:45:44,339 (25986/139808125990720) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.country-name
+DEBUG 2020-02-03 08:45:44,340 (25986/139808125990720) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "091c8137-f515-4326-a656-a00d3c8bcd30-426bc00a",
+    "queryResult": {
+        "queryText": "Germany",
+        "action": "settings.country-name",
+        "parameters": {
+            "geo-country": "Germany"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks for details! This will help me to keep you updated.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks for details! This will help me to keep you updated."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "lifespanCount": 1,
+                "parameters": {
+                    "geo-country": "Germany",
+                    "geo-country.original": "Germany"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "geo-country": "Germany",
+                    "geo-country.original": "Germany"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/7c1da975-211a-48f4-be2e-4634fc8be44d",
+            "displayName": "settings - country - name"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "text": "Germany",
+                "date": 1580719543.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "message_id": 141.0
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 08:45:44,340 (25986/139808125990720) - telegram_handler.py:634 [tbot_process_telegram_intents] Bad message received
+DEBUG 2020-02-03 09:17:21,065 (28054/140419823318848) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fb5f4145470>
+DEBUG 2020-02-03 09:17:21,068 (28056/140419823318848) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fb5f4145550>
+DEBUG 2020-02-03 09:17:21,062 (28055/140419823318848) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fb5f41454e0>
+INFO 2020-02-03 09:17:21,561 (28054/140419823318848) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:17:21,562 (28055/140419823318848) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:17:21,562 (28056/140419823318848) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:17:21,714 (28054/140419823318848) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:17:21,715 (28055/140419823318848) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:17:21,723 (28056/140419823318848) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 09:17:31,891 (28056/140419823318848) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:17:31,892 (28056/140419823318848) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:17:31,892 (28056/140419823318848) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:17:31,903 (28055/140419823318848) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:17:31,904 (28055/140419823318848) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:17:31,904 (28055/140419823318848) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:17:31,903 (28054/140419823318848) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:17:31,906 (28054/140419823318848) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:17:31,906 (28054/140419823318848) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:18:23,057 (28097/140715431561024) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7ffac7b43470>
+DEBUG 2020-02-03 09:18:23,060 (28101/140715431561024) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7ffac7b434e0>
+DEBUG 2020-02-03 09:18:23,084 (28102/140715431561024) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7ffac7b434a8>
+INFO 2020-02-03 09:18:23,548 (28097/140715431561024) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:18:23,549 (28101/140715431561024) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:18:23,554 (28102/140715431561024) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:18:23,702 (28101/140715431561024) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:18:23,702 (28097/140715431561024) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:18:23,711 (28102/140715431561024) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 09:18:28,421 (28101/140715431561024) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:18:28,427 (28101/140715431561024) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:18:28,428 (28101/140715431561024) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:18:28,427 (28102/140715431561024) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:18:28,435 (28102/140715431561024) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:18:28,436 (28102/140715431561024) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:18:28,439 (28097/140715431561024) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:18:28,440 (28097/140715431561024) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:18:28,440 (28097/140715431561024) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:18:52,712 (28102/140715431561024) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.country-name
+DEBUG 2020-02-03 09:18:52,713 (28102/140715431561024) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "f3d27556-e267-440b-8f7d-d6afb483410f-426bc00a",
+    "queryResult": {
+        "queryText": "Iceland",
+        "action": "settings.country-name",
+        "parameters": {
+            "geo-country": "Iceland"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks for details! This will help me to keep you updated.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks for details! This will help me to keep you updated."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "lifespanCount": 1,
+                "parameters": {
+                    "geo-country": "Iceland",
+                    "geo-country.original": "Iceland"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "geo-country": "Iceland",
+                    "geo-country.original": "Iceland"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/7c1da975-211a-48f4-be2e-4634fc8be44d",
+            "displayName": "settings - country - name"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "date": 1580721531.0,
+                "from": {
+                    "language_code": "en",
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore"
+                },
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "message_id": 145.0,
+                "text": "Iceland"
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 09:18:52,713 (28102/140715431561024) - telegram_handler.py:644 [tbot_process_telegram_intents] Bad message received
+DEBUG 2020-02-03 09:21:28,809 (28179/140571512362816) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fd945739470>
+DEBUG 2020-02-03 09:21:28,844 (28180/140571512362816) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fd94573c438>
+DEBUG 2020-02-03 09:21:28,849 (28181/140571512362816) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fd9457394a8>
+INFO 2020-02-03 09:21:29,298 (28179/140571512362816) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:21:29,320 (28180/140571512362816) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:21:29,321 (28181/140571512362816) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:21:29,451 (28179/140571512362816) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:21:29,473 (28180/140571512362816) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:21:29,473 (28181/140571512362816) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 09:21:35,312 (28179/140571512362816) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:21:35,314 (28180/140571512362816) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:21:35,315 (28181/140571512362816) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:21:35,315 (28180/140571512362816) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+DEBUG 2020-02-03 09:21:35,316 (28179/140571512362816) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:21:35,316 (28180/140571512362816) - telegram_handler.py:36 [__init__] Telegram Initialized
+INFO 2020-02-03 09:21:35,316 (28179/140571512362816) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:21:35,316 (28181/140571512362816) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:21:35,319 (28181/140571512362816) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:21:59,847 (28179/140571512362816) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.country-name
+DEBUG 2020-02-03 09:21:59,847 (28179/140571512362816) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "192bebac-c3dd-4b16-b480-babee2e3c91a-426bc00a",
+    "queryResult": {
+        "queryText": "my native country is India",
+        "action": "settings.country-name",
+        "parameters": {
+            "geo-country": "India"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks for details! This will help me to keep you updated.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks for details! This will help me to keep you updated."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "lifespanCount": 1,
+                "parameters": {
+                    "geo-country": "India",
+                    "geo-country.original": "India"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "geo-country": "India",
+                    "geo-country.original": "India"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/7c1da975-211a-48f4-be2e-4634fc8be44d",
+            "displayName": "settings - country - name"
+        },
+        "intentDetectionConfidence": 0.835284,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "text": "my native country is India",
+                "date": 1580721719.0,
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "message_id": 149.0
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+INFO 2020-02-03 09:22:00,006 (28179/140571512362816) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 09:22:00,006 (28179/140571512362816) - telegram_handler.py:638 [tbot_process_telegram_intents] User updated his/her native country None
+DEBUG 2020-02-03 09:23:37,131 (28234/140500402579264) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fc8b6fa6470>
+DEBUG 2020-02-03 09:23:37,266 (28235/140500402579264) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fc8b6fa9438>
+DEBUG 2020-02-03 09:23:37,267 (28236/140500402579264) - dispatcher.py:176 [_set_singleton] Setting singleton dispatcher as <telegram.ext.dispatcher.Dispatcher object at 0x7fc8b6fa64a8>
+INFO 2020-02-03 09:23:37,624 (28234/140500402579264) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:23:37,754 (28236/140500402579264) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:23:37,754 (28235/140500402579264) - database_wrapper.py:43 [hwdb_conn_open] DB connection successful!
+INFO 2020-02-03 09:23:37,777 (28234/140500402579264) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:23:37,907 (28236/140500402579264) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+INFO 2020-02-03 09:23:37,908 (28235/140500402579264) - database_wrapper.py:23 [__init__] Database version ('PostgreSQL 11.6 on x86_64-pc-linux-gnu, compiled by gcc, a 863367dcd p 310a24bd77, 64-bit',)
+DEBUG 2020-02-03 09:23:43,384 (28234/140500402579264) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:23:43,387 (28234/140500402579264) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:23:43,387 (28234/140500402579264) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:23:43,628 (28235/140500402579264) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:23:43,628 (28236/140500402579264) - inference.py:289 [hwb_dataframe_processing] Destination DF shape (1550, 31)
+DEBUG 2020-02-03 09:23:43,628 (28236/140500402579264) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+DEBUG 2020-02-03 09:23:43,629 (28235/140500402579264) - inference.py:290 [hwb_dataframe_processing] TopSights DF Shape (26436, 20)
+INFO 2020-02-03 09:23:43,629 (28236/140500402579264) - telegram_handler.py:36 [__init__] Telegram Initialized
+INFO 2020-02-03 09:23:43,629 (28235/140500402579264) - telegram_handler.py:36 [__init__] Telegram Initialized
+DEBUG 2020-02-03 09:23:54,984 (28234/140500402579264) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=settings.country-name
+DEBUG 2020-02-03 09:23:54,984 (28234/140500402579264) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "d3c33cca-88eb-4386-8c6b-b6e43ed26721-426bc00a",
+    "queryResult": {
+        "queryText": "Its India",
+        "action": "settings.country-name",
+        "parameters": {
+            "geo-country": "India"
+        },
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Thanks for details! This will help me to keep you updated.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Thanks for details! This will help me to keep you updated."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "lifespanCount": 1,
+                "parameters": {
+                    "geo-country": "India",
+                    "geo-country.original": "India"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0,
+                    "geo-country": "India",
+                    "geo-country.original": "India"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/7c1da975-211a-48f4-be2e-4634fc8be44d",
+            "displayName": "settings - country - name"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "chat": {
+                    "id": "983577319",
+                    "type": "private"
+                },
+                "message_id": 153.0,
+                "text": "Its India",
+                "date": 1580721834.0,
+                "from": {
+                    "language_code": "en",
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore"
+                }
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+INFO 2020-02-03 09:23:55,141 (28234/140500402579264) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319
+DEBUG 2020-02-03 09:23:55,141 (28234/140500402579264) - telegram_handler.py:638 [tbot_process_telegram_intents] User updated his/her native country India
+DEBUG 2020-02-03 09:27:56,950 (28235/140500402579264) - bot_entry_point.py:50 [post] New Message -- platform=telegram action=input.cb_welcome
+DEBUG 2020-02-03 09:27:56,951 (28235/140500402579264) - bot_entry_point.py:51 [post] Message Dump ==> 
+{
+    "responseId": "8a71ea91-9232-4b10-b36f-30e696d57bec-426bc00a",
+    "queryResult": {
+        "queryText": "TELEGRAM_WELCOME",
+        "action": "input.cb_welcome",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "outputContexts": [
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/settings-followup",
+                "parameters": {
+                    "geo-country": "India",
+                    "geo-country.original": "India"
+                }
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/telegram_welcome"
+            },
+            {
+                "name": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0.0,
+                    "no-match": 0.0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/test-helloworld-erlkwp/agent/intents/8de1a26e-c778-4596-9ee2-185fd93f1fdb",
+            "displayName": "Default Welcome Intent"
+        },
+        "intentDetectionConfidence": 1.0,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "telegram",
+        "payload": {
+            "data": {
+                "from": {
+                    "last_name": "Deore",
+                    "id": 983577319.0,
+                    "first_name": "Milind",
+                    "username": "MilindDeore",
+                    "language_code": "en"
+                },
+                "message_id": 155.0,
+                "entities": [
+                    {
+                        "length": 6.0,
+                        "type": "bot_command"
+                    }
+                ],
+                "chat": {
+                    "type": "private",
+                    "id": "983577319"
+                },
+                "text": "/start",
+                "date": 1580722076.0
+            }
+        }
+    },
+    "session": "projects/test-helloworld-erlkwp/agent/sessions/b1bd74e8-d5f7-3b28-a1bc-060ad108bfcc"
+}
+DEBUG 2020-02-03 09:27:56,951 (28235/140500402579264) - telegram_handler.py:618 [tbot_process_telegram_intents] Intent without callback : input.cb_welcome
+DEBUG 2020-02-03 09:27:56,951 (28235/140500402579264) - bot.py:65 [decorator] Entering: send_message
+DEBUG 2020-02-03 09:27:56,953 (28235/140500402579264) - connectionpool.py:835 [_new_conn] Starting new HTTPS connection (1): api.telegram.org
+DEBUG 2020-02-03 09:27:57,767 (28235/140500402579264) - connectionpool.py:412 [_make_request] https://api.telegram.org:443 "POST /bot1057694309:AAEPzK9v3PE69tXp7bwHOe1Skr53z_k_U1U/sendMessage HTTP/1.1" 200 676
+DEBUG 2020-02-03 09:27:57,768 (28235/140500402579264) - bot.py:67 [decorator] {'message_id': 156, 'date': 1580722077, 'chat': {'id': 983577319, 'type': 'private', 'username': 'MilindDeore', 'first_name': 'Milind', 'last_name': 'Deore'}, 'text': 'Hello Milind,\nHow would you like to explore places by country or by experience.', 'entities': [{'type': 'bold', 'offset': 51, 'length': 10}, {'type': 'bold', 'offset': 65, 'length': 13}], 'caption_entities': [], 'photo': [], 'new_chat_members': [], 'new_chat_photo': [], 'delete_chat_photo': False, 'group_chat_created': False, 'supergroup_chat_created': False, 'channel_chat_created': False, 'reply_markup': {'inline_keyboard': [[{'text': 'By Country', 'callback_data': 'TELEGRAM_BY_COUNTRY'}, {'text': 'By Experience', 'callback_data': 'TELEGRAM_BY_EXPERIENCE'}], [{'text': 'My Bucket List', 'callback_data': 'Show my wish list'}]]}, 'from': {'id': 1057694309, 'first_name': 'columbus_find', 'is_bot': True, 'username': 'columbus_find_bot'}}
+DEBUG 2020-02-03 09:27:57,769 (28235/140500402579264) - bot.py:68 [decorator] Exiting: send_message
+INFO 2020-02-03 09:27:57,925 (28235/140500402579264) - database_wrapper.py:191 [hwdb_columbus_user_bucketlist_upsert] Successfully bucketlist upsert for user id 983577319

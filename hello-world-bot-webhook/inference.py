@@ -56,18 +56,28 @@ class HWBase:
         self.home = ''
         self.ts_experiences = []
 
-        self.EUROPE = []
-        self.ASIA = ['India', 'Malaysia', 'SriLanka', 'Bhutan', 'Indonesia', 'Myanmar', 'Nepal', 'Singapore', 'Thailand', 'UnitedArabEmirates', 'Vietnam']
+        # EUROPE Dataframes
+        self.df_dest_europe = pd.read_csv('data/europe/Destination_1_0.csv', low_memory=False, encoding='utf-8')
+        self.df_tsights_europe = pd.read_csv('data/europe/TopSights_1_0.csv', low_memory=False, encoding='utf-8')
 
-        self.df_dest = pd.read_csv('data/Destination_v0.1.csv', low_memory=False, encoding='utf-8')
-        self.df_tsights = pd.read_csv('data/TopSights_v0.1.csv', low_memory=False, encoding='utf-8')
+        # ASIA Dataframes
+        self.df_dest_asia = pd.read_csv('data/asia/Destination_1_0.csv', low_memory=False, encoding='utf-8')
+        self.df_tsights_asia = pd.read_csv('data/asia/TopSights_1_0.csv', low_memory=False, encoding='utf-8')
 
-        self.df_month_data = pd.read_csv(self.home + 'data/Months_v1.0.csv', low_memory=False, encoding='utf-8')
+        # Months, PopularTimes, LonelyPlanet
+        self.df_month_data = pd.read_csv(self.home + 'data/Months_1_0.csv', low_memory=False, encoding='utf-8')
         self.df_country_info = pd.read_csv(self.home + 'data/country_info_v1.0.csv', low_memory=False, encoding='utf-8')
         self.df_lp_url = pd.read_csv(self.home + 'data/LP_urls_v1.0.csv', low_memory=False, encoding='utf-8')
 
         # Init functions.
-        self.hwb_dataframe_processing()
+        self.hwb_month_data_preprocessing()
+        self.df_dest_europe, self.df_tsights_europe = self.hwb_dataframe_processing(self.df_dest_europe, self.df_tsights_europe)
+        self.df_dest_asia, self.df_tsights_asia = self.hwb_dataframe_processing(self.df_dest_asia, self.df_tsights_asia)
+
+        # List of countries
+        self.EUROPE_COUNTRIES = self.df_dest_europe.Country.unique().tolist() 
+        self.AISA_COUNTRIES = self.df_dest_asia.Country.unique().tolist()
+
 
     def hwb_drop_constant_value_column(self, dataframe):
         """
@@ -109,11 +119,7 @@ class HWBase:
                 return float(x[position]) * 60
 
 
-    def hwb_dataframe_processing(self):
-
-        #
-        # 1. Month data
-        #
+    def hwb_month_data_preprocessing(self):
         # Clean 'degree' and 'Precipitation' special characters.
 
         self.df_month_data['MinTemp'] = self.df_month_data['MinTemp'].replace('\u00b0','', regex=True)
@@ -124,137 +130,140 @@ class HWBase:
         self.df_month_data['Precipitation'] = pd.to_numeric(self.df_month_data['Precipitation'])
 
 
+    def hwb_dataframe_processing(self, df_dest, df_tsights):
         #
-        # 2. Destination Data
+        # 1. Destination Data
         #
+
         # Rename is the columns.
 
-        self.df_dest.rename(columns={'Outdoor Recreation':'OutdoorRecreation', 'National Parks':'NationalParks',
+        df_dest.rename(columns={'Outdoor Recreation':'OutdoorRecreation', 'National Parks':'NationalParks',
                      'Coral reef':'CoralReef', 'Winter sports':'WinterSports', 'Nature reserve':'NatureReserve', 'Scuba diving':'ScubaDiving',
                      'Whale watching':'WhaleWatching', 'Polar bear':'PolarBear', 'Hot spring':'HotSpring', 'Autumn leaf color':'AutumnLeafColor',
                      'Wine tasting':'WineTasting', 'Bungee jumping':'BungeeJumping', 'Whale shark':'WhaleShark', 'Alpine skiing':'AlpineSkiing',
                      'Historic site':'HistoricSite'}, inplace=True)
 
         # FIXME: Remove unwated space in the country columns.
-        self.df_dest['Country'] = self.df_dest['Country'].astype(str)
-        self.df_dest['Country'] = self.df_dest.Country.apply(lambda x: x.replace(' ',''))
-        self.df_dest['Country'] = self.df_dest['Country'].astype('category')
+        df_dest['Country'] = df_dest['Country'].astype(str)
+        df_dest['Country'] = df_dest.Country.apply(lambda x: x.replace(' ',''))
+        df_dest['Country'] = df_dest['Country'].astype('category')
 
         # Convert to booleans
-        self.df_dest.Architecture = self.df_dest.Architecture == 'yes'
-        self.df_dest.Nature = self.df_dest.Nature == 'yes'
-        self.df_dest.Shopping = self.df_dest.Shopping == 'yes'
-        self.df_dest.Fishing = self.df_dest.Fishing == 'yes'
-        self.df_dest.Hiking = self.df_dest.Hiking == 'yes'
-        self.df_dest.OutdoorRecreation = self.df_dest.OutdoorRecreation == 'yes'
-        self.df_dest.Adventure = self.df_dest.Adventure == 'yes'
-        self.df_dest.Beaches = self.df_dest.Beaches == 'yes'
-        self.df_dest.Camping = self.df_dest.Camping == 'yes'
-        self.df_dest.Caves = self.df_dest.Caves == 'yes'
-        self.df_dest.Museums = self.df_dest.Museums == 'yes'
-        self.df_dest.NationalParks = self.df_dest.NationalParks == 'yes'
-        self.df_dest.Art = self.df_dest.Art == 'yes'
-        self.df_dest.Desert = self.df_dest.Desert == 'yes'
-        self.df_dest.CoralReef = self.df_dest.CoralReef == 'yes'
-        self.df_dest.Skiing = self.df_dest.Skiing == 'yes'
-        self.df_dest.Snowboarding = self.df_dest.Snowboarding == 'yes'
-        self.df_dest.WinterSports = self.df_dest.WinterSports == 'yes'
-        self.df_dest.Wildlife = self.df_dest.Wildlife == 'yes'
-        self.df_dest.Penguin = self.df_dest.Penguin == 'yes'
-        self.df_dest.Glacier = self.df_dest.Glacier == 'yes'
-        self.df_dest.Ecotourism = self.df_dest.Ecotourism == 'yes'
-        self.df_dest.Snorkeling = self.df_dest.Snorkeling == 'yes'
-        self.df_dest.Koala = self.df_dest.Koala == 'yes'
-        self.df_dest.Surfing = self.df_dest.Surfing == 'yes'
-        self.df_dest.NatureReserve = self.df_dest.NatureReserve == 'yes'
-        self.df_dest.Volcano = self.df_dest.Volcano == 'yes'
-        self.df_dest.Sailing = self.df_dest.Sailing == 'yes'
-        self.df_dest.ScubaDiving = self.df_dest.ScubaDiving == 'yes'
-        self.df_dest.Theaters = self.df_dest.Theaters == 'yes'
-        self.df_dest.Elephant = self.df_dest.Elephant == 'yes'
-        self.df_dest.Safari = self.df_dest.Safari == 'yes'
-        self.df_dest.Jaguar = self.df_dest.Jaguar == 'yes'
-        self.df_dest.Casinos = self.df_dest.Casinos == 'yes'
-        self.df_dest.Kitesurfing = self.df_dest.Kitesurfing == 'yes'
-        self.df_dest.Windsurfing = self.df_dest.Windsurfing == 'yes'
-        self.df_dest.Birdwatching = self.df_dest.Birdwatching == 'yes'
-        self.df_dest.Rainforest = self.df_dest.Rainforest == 'yes'
-        self.df_dest.Nightlife = self.df_dest.Nightlife == 'yes'
-        self.df_dest.WhaleWatching = self.df_dest.WhaleWatching == 'yes'
-        self.df_dest.Reindeer = self.df_dest.Reindeer == 'yes'
-        self.df_dest.Gorilla = self.df_dest.Gorilla == 'yes'
-        self.df_dest.Kayaking = self.df_dest.Kayaking == 'yes'
-        self.df_dest.PolarBear = self.df_dest.PolarBear == 'yes'
-        self.df_dest.HotSpring = self.df_dest.HotSpring == 'yes'
-        self.df_dest.Tiger = self.df_dest.Tiger == 'yes'
-        self.df_dest.Yoga = self.df_dest.Yoga == 'yes'
-        self.df_dest.Orangutan = self.df_dest.Orangutan == 'yes'
-        self.df_dest.Golf = self.df_dest.Golf == 'yes'
-        self.df_dest.Rafting = self.df_dest.Rafting == 'yes'
-        self.df_dest.AutumnLeafColor = self.df_dest.AutumnLeafColor == 'yes'
-        self.df_dest.Dolphin = self.df_dest.Dolphin == 'yes'
-        self.df_dest.WineTasting = self.df_dest.WineTasting == 'yes'
-        self.df_dest.Climbing = self.df_dest.Climbing == 'yes'
-        self.df_dest.Paragliding = self.df_dest.Paragliding == 'yes'
-        self.df_dest.BungeeJumping = self.df_dest.BungeeJumping == 'yes'
-        self.df_dest.WhaleShark = self.df_dest.WhaleShark == 'yes'
-        self.df_dest.AlpineSkiing = self.df_dest.AlpineSkiing == 'yes'
-        self.df_dest.HistoricSite = self.df_dest.HistoricSite == 'yes'
+        df_dest.Architecture = df_dest.Architecture == 'yes'
+        df_dest.Nature = df_dest.Nature == 'yes'
+        df_dest.Shopping = df_dest.Shopping == 'yes'
+        df_dest.Fishing = df_dest.Fishing == 'yes'
+        df_dest.Hiking = df_dest.Hiking == 'yes'
+        df_dest.OutdoorRecreation = df_dest.OutdoorRecreation == 'yes'
+        df_dest.Adventure = df_dest.Adventure == 'yes'
+        df_dest.Beaches = df_dest.Beaches == 'yes'
+        df_dest.Camping = df_dest.Camping == 'yes'
+        df_dest.Caves = df_dest.Caves == 'yes'
+        df_dest.Museums = df_dest.Museums == 'yes'
+        df_dest.NationalParks = df_dest.NationalParks == 'yes'
+        df_dest.Art = df_dest.Art == 'yes'
+        df_dest.Desert = df_dest.Desert == 'yes'
+        df_dest.CoralReef = df_dest.CoralReef == 'yes'
+        df_dest.Skiing = df_dest.Skiing == 'yes'
+        df_dest.Snowboarding = df_dest.Snowboarding == 'yes'
+        df_dest.WinterSports = df_dest.WinterSports == 'yes'
+        df_dest.Wildlife = df_dest.Wildlife == 'yes'
+        df_dest.Penguin = df_dest.Penguin == 'yes'
+        df_dest.Glacier = df_dest.Glacier == 'yes'
+        df_dest.Ecotourism = df_dest.Ecotourism == 'yes'
+        df_dest.Snorkeling = df_dest.Snorkeling == 'yes'
+        df_dest.Koala = df_dest.Koala == 'yes'
+        df_dest.Surfing = df_dest.Surfing == 'yes'
+        df_dest.NatureReserve = df_dest.NatureReserve == 'yes'
+        df_dest.Volcano = df_dest.Volcano == 'yes'
+        df_dest.Sailing = df_dest.Sailing == 'yes'
+        df_dest.ScubaDiving = df_dest.ScubaDiving == 'yes'
+        df_dest.Theaters = df_dest.Theaters == 'yes'
+        df_dest.Elephant = df_dest.Elephant == 'yes'
+        df_dest.Safari = df_dest.Safari == 'yes'
+        df_dest.Jaguar = df_dest.Jaguar == 'yes'
+        df_dest.Casinos = df_dest.Casinos == 'yes'
+        df_dest.Kitesurfing = df_dest.Kitesurfing == 'yes'
+        df_dest.Windsurfing = df_dest.Windsurfing == 'yes'
+        df_dest.Birdwatching = df_dest.Birdwatching == 'yes'
+        df_dest.Rainforest = df_dest.Rainforest == 'yes'
+        df_dest.Nightlife = df_dest.Nightlife == 'yes'
+        df_dest.WhaleWatching = df_dest.WhaleWatching == 'yes'
+        df_dest.Reindeer = df_dest.Reindeer == 'yes'
+        df_dest.Gorilla = df_dest.Gorilla == 'yes'
+        df_dest.Kayaking = df_dest.Kayaking == 'yes'
+        df_dest.PolarBear = df_dest.PolarBear == 'yes'
+        df_dest.HotSpring = df_dest.HotSpring == 'yes'
+        df_dest.Tiger = df_dest.Tiger == 'yes'
+        df_dest.Yoga = df_dest.Yoga == 'yes'
+        df_dest.Orangutan = df_dest.Orangutan == 'yes'
+        df_dest.Golf = df_dest.Golf == 'yes'
+        df_dest.Rafting = df_dest.Rafting == 'yes'
+        df_dest.AutumnLeafColor = df_dest.AutumnLeafColor == 'yes'
+        df_dest.Dolphin = df_dest.Dolphin == 'yes'
+        df_dest.WineTasting = df_dest.WineTasting == 'yes'
+        df_dest.Climbing = df_dest.Climbing == 'yes'
+        df_dest.Paragliding = df_dest.Paragliding == 'yes'
+        df_dest.BungeeJumping = df_dest.BungeeJumping == 'yes'
+        df_dest.WhaleShark = df_dest.WhaleShark == 'yes'
+        df_dest.AlpineSkiing = df_dest.AlpineSkiing == 'yes'
+        df_dest.HistoricSite = df_dest.HistoricSite == 'yes'
 
         # Drop constant columns.
-        self.df_dest = self.hwb_drop_constant_value_column(self.df_dest)
+        df_dest = self.hwb_drop_constant_value_column(df_dest)
 
         # Convert 'NaN' to empty string
-        self.df_dest['Description'] = self.df_dest.Description.fillna('')
+        #df_dest['Description'] = df_dest.Description.fillna('')
+
 
         #
-        # 3. Top Sights Data
+        # 2. Top Sights Data
         #
 
         # FIXME: Remove unwated space in the country columns.
-        self.df_tsights['Country'] = self.df_tsights['Country'].astype(str)
-        self.df_tsights['Country'] = self.df_tsights.Country.apply(lambda x: x.replace(' ',''))
-        self.df_tsights['Country'] = self.df_tsights['Country'].astype('category')
+        df_tsights['Country'] = df_tsights['Country'].astype(str)
+        df_tsights['Country'] = df_tsights.Country.apply(lambda x: x.replace(' ',''))
+        df_tsights['Country'] = df_tsights['Country'].astype('category')
 
         # Convert all to mins.
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights['TypicalTimeSpent'].astype(str)
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.split('-').apply(self.hwb_split_and_pick_right, position=1)
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.split('to').apply(self.hwb_split_and_pick_right, position=1)
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.replace('hour', 'hours')
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.replace('hr', 'hours')
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.replace(' min', '')
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.replace('(', '')
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.replace(')', '')
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.str.split(' hours').apply(self.hwb_mul, position=0)
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights['TypicalTimeSpent'].astype(float)
+        df_tsights['TypicalTimeSpent'] = df_tsights['TypicalTimeSpent'].astype(str)
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.split('-').apply(self.hwb_split_and_pick_right, position=1)
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.split('to').apply(self.hwb_split_and_pick_right, position=1)
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.replace('hour', 'hours')
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.replace('hr', 'hours')
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.replace(' min', '')
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.replace('(', '')
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.replace(')', '')
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.str.split(' hours').apply(self.hwb_mul, position=0)
+        df_tsights['TypicalTimeSpent'] = df_tsights['TypicalTimeSpent'].astype(float)
 
         # Delete the rows where 'Rating' and 'Reviews' are not given.
-        self.df_tsights = self.df_tsights[pd.notnull(self.df_tsights['Rating'])]
-        self.df_tsights = self.df_tsights[pd.notnull(self.df_tsights['NumberOfReview'])]
+        df_tsights = df_tsights[pd.notnull(df_tsights['Rating'])]
+        df_tsights = df_tsights[pd.notnull(df_tsights['NumberOfReview'])]
 
         # Clean NumberOfReviews column
-        self.df_tsights['NumberOfReview'] = self.df_tsights['NumberOfReview'].astype(str)
-        self.df_tsights['NumberOfReview'] = self.df_tsights.NumberOfReview.apply(lambda x: x.replace(',',''))
-        self.df_tsights['NumberOfReview'] = self.df_tsights.NumberOfReview.apply(lambda x: x.replace('-',''))
-        self.df_tsights['NumberOfReview'] = self.df_tsights.NumberOfReview.apply(lambda x: x.replace('(',''))
-        self.df_tsights['NumberOfReview'] = self.df_tsights.NumberOfReview.apply(lambda x: x.replace(')',''))
-        self.df_tsights['NumberOfReview'] = self.df_tsights['NumberOfReview'].astype(float)
+        df_tsights['NumberOfReview'] = df_tsights['NumberOfReview'].astype(str)
+        df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace(',',''))
+        df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace('-',''))
+        df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace('(',''))
+        df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace(')',''))
+        df_tsights['NumberOfReview'] = df_tsights['NumberOfReview'].astype(float)
 
         # Drop 'zero' value columns
-        self.df_tsights = self.hwb_drop_zero_value_column(self.df_tsights)
+        df_tsights = self.hwb_drop_zero_value_column(df_tsights)
 
         # Convert 'NaN' to empty string
-        self.df_tsights['Description'] = self.df_tsights.Description.fillna('')
+        df_tsights['Description'] = df_tsights.Description.fillna('')
 
         # FIXME: what should be the typical default time to set? for now its 30 mins.
-        #self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.fillna(self.df_tsights.TypicalTimeSpent.mean())
-        self.df_tsights['TypicalTimeSpent'] = self.df_tsights.TypicalTimeSpent.fillna(30)
+        #df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.fillna(df_tsights.TypicalTimeSpent.mean())
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.fillna(30)
 
 
         # Substitute features with 'OptionsX' from top sights data.
         tsights_flist = []
 
-        tsights_flist = self.df_tsights.columns.unique().tolist()
+        tsights_flist = df_tsights.columns.unique().tolist()
         tsights_flist.remove('Country')
         tsights_flist.remove('Destination')
         tsights_flist.remove('TopSight')
@@ -268,52 +277,31 @@ class HWBase:
 
         for ops in tsights_flist:
           features = []
-          self.df_tsights[ops] = self.df_tsights[ops].astype(str)
-          features = self.df_tsights[ops].unique().tolist()
+          df_tsights[ops] = df_tsights[ops].astype(str)
+          features = df_tsights[ops].unique().tolist()
           features = [x for x in features if x != 'nan']
           self.ts_experiences.extend(list(set(features) - set(self.ts_experiences)))
 
         # Set all new columns to 'False'
         for ops in self.ts_experiences:
-          self.df_tsights[ops] = False
+          df_tsights[ops] = False
 
         # Set respective columns.
         for ops in self.ts_experiences:
           for f in tsights_flist:
-            self.df_tsights.loc[self.df_tsights[f] == ops, ops] = True
+            df_tsights.loc[df_tsights[f] == ops, ops] = True
 
         # Drop all the 'OptionX' columns from DF.
-        self.df_tsights.drop(tsights_flist, axis=1, inplace=True)
+        df_tsights.drop(tsights_flist, axis=1, inplace=True)
 
-
-        logger.debug('Destination DF shape {0}'.format(self.df_dest.shape))
-        logger.debug('TopSights DF Shape {0}'.format(self.df_tsights.shape))
+        logger.debug('Destination DF shape {0}'.format(df_dest.shape))
+        logger.debug('TopSights DF Shape {0}'.format(df_tsights.shape))
 
         if HW_DEBUG:
-            display(self.df_dest.head())
-            display(DataFrameSummary(self.df_dest).summary())
+            display(df_dest.head())
+            display(DataFrameSummary(df_dest).summary())
 
-
-    def hwb_all_experiences(self):
-        """
-        Return all the columns in destination.csv.
-        """
-        exp = list(self.df_dest.columns.values)
-        exp.remove('Country')
-        exp.remove('Destination')
-        exp.remove('Description')
-        return exp
-
-
-    def hwb_all_experiences_for_a_country(self, country):
-        """
-        Return all the categories for a country.
-        """
-
-        df_country = self.df_dest[self.df_dest['Country'] == country]
-        df_country = self.hwb_drop_constant_value_column(df_country)
-        df_country = df_country.drop(['Destination', 'Destination'], axis=1)
-        return list(df_country.columns.values)
+        return df_dest, df_tsights
 
 
     def hwb_all_countries(self, continent):
@@ -321,10 +309,49 @@ class HWBase:
         Return list of all the supported countries.
         """
 
-        if continent == 'EUROPE':
-            return self.EUROPE
-        elif continent == 'ASIA':
-            return self.ASIA
+        if continent == 'Europe':
+            return self.EUROPE_COUNTRIES
+        elif continent == 'Asia':
+            return self.AISA_COUNTRIES
+
+
+    def hwb_get_continent_for_countries(self, country):
+        """
+        Return list of all the supported countries.
+        """
+
+        if country in self.EUROPE_COUNTRIES:
+            return 'Europe'
+        elif country in self.AISA_COUNTRIES:
+            return 'Asia'
+        else:
+            logger.error('Invalid country name!')
+
+
+
+    def hwb_all_experiences(self, continent):
+        """
+        Return all the columns in destination.csv.
+        """
+       
+        exp = list(eval('self.df_dest_' + continent.lower() + '.columns.values'))
+        exp.remove('Country')
+        exp.remove('Destination')
+        exp.remove('Description')
+        exp.remove('Rank')
+        return exp
+
+
+    def hwb_all_experiences_for_a_country(self, country):
+        """
+        Return all the categories for a country.
+        """
+        continent = self.hwb_get_continent_for_countries(country)
+        df_var = eval('self.df_dest_' + continent.lower())
+        df_country = df_var[df_var['Country'] == country]
+        df_country = self.hwb_drop_constant_value_column(df_country)
+        df_country = df_country.drop(['Destination', 'Description', 'Rank'], axis=1)
+        return list(df_country.columns.values)
 
 
     def hwb_fetch_subexp_to_exp(self, experiences):
@@ -379,7 +406,7 @@ class HWBase:
             return ''
 
 
-    def hwb_experience_combinations(self, experience, exp_len):
+    def hwb_experience_combinations(self, continent, experience, exp_len):
         """
         When user experiences are not found in the dataset, in that case we can suggest possible combinations for a given
         list of experiences as suggestion to
@@ -394,17 +421,18 @@ class HWBase:
             for i in range(len(elist)):
                 top.append(elist[i])
 
+        df_var = eval('self.df_dest_' + continent.lower())
         for i in range(len(top)):
             if len(top[i]) and (len(top3) < 3):
-                c_list = list(set(self.hwb_all_experiences()) - set(list(top[i])))
-                df_tmp = self.df_dest[(self.df_dest[c_list] == False).all(axis=1) & (self.df_dest[list(top[i])] == True).all(axis=1)]
+                c_list = list(set(self.hwb_all_experiences(continent)) - set(list(top[i])))
+                df_tmp = df_var[(df_var[c_list] == False).all(axis=1) & (df_var[list(top[i])] == True).all(axis=1)]
                 if not df_tmp.empty:
                     top3.append(top[i])
 
         return top3
 
 
-    def hwb_find_top_countries_for_experiences(self, experiences):
+    def hwb_find_top_countries_for_experiences(self, continent, experiences):
         """
         Find any countries for matching experience(s).
         The logic is as follows:
@@ -416,23 +444,24 @@ class HWBase:
         err = 200
 
         # Sanity checks:
-        if not (set(self.hwb_all_experiences()) & set(experiences)):
+        if not (set(self.hwb_all_experiences(continent)) & set(experiences)):
             return ret_suggestions, ret_data, 400
 
         subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         # Destination.csv has all the possible combination of the filters. Hence always match 'all'.
         # When 'all' is not matched in that case 'any' will be the suggestions to user.
+        df_var = eval('self.df_dest_' + continent.lower())
         for cat,subcat in subexp_list.items():
             if len(subcat):
-                c_list = list(set(self.hwb_all_experiences()) - set(subcat))
-                df_local = self.df_dest[(self.df_dest[c_list] == False).all(axis=1) & (self.df_dest[subcat] == True).all(axis=1)]
+                c_list = list(set(self.hwb_all_experiences(continent)) - set(subcat))
+                df_local = df_var[(df_var[c_list] == False).all(axis=1) & (df_var[subcat] == True).all(axis=1)]
                 if HW_DEBUG:
                     display(df_local.head())
 
                 if df_local.empty:
                     sugg = {}
-                    top_sugg = self.hwb_experience_combinations(subcat, len(subcat))
+                    top_sugg = self.hwb_experience_combinations(continent, subcat, len(subcat))
                     sugg['Suggestion'] = top_sugg
                     ret_suggestions.append(sugg)
                     logger.info('Top 3 expereinces suggestions to user {0} | {1} | {2}'.format(list(top_sugg[0]), list(top_sugg[1]), list(top_sugg[2])))
@@ -441,7 +470,7 @@ class HWBase:
                 else:
                     payload = {}
                     # Find top countries but not ordered.
-                    #df_local = df_local.sort_values(['Rank'], ascending=False)
+                    df_local = df_local.sort_values(['Rank'], ascending=False)
                     top_countries = df_local.Country.unique().tolist()
                     logger.debug('Countries {0} experiences {1}'.format(top_countries, subcat))
                     payload['Countries'] = top_countries
@@ -452,7 +481,7 @@ class HWBase:
 
 
 
-    def hwb_find_destination_for_experiences(self, country, experiences):
+    def hwb_find_destination_for_experiences(self, continent, country, experiences):
         """
         Find any countries for matching experience(s).
         The logic is as follows:
@@ -464,19 +493,20 @@ class HWBase:
         err = 200
 
         # Sanity checks:
-        if not (set(self.hwb_all_experiences()) & set(experiences)):
+        if not (set(self.hwb_all_experiences(continent)) & set(experiences)):
             return ret_suggestions, ret_data, 400
 
         subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         # Destination.csv has all the possible combination of the filters. Hence always match 'all'.
         # When 'all' is not matched in that case 'any' will be the suggestions to user.
-        logger.debug('Country {0} experience {1}'.format(country, experiences))
-        df_local = self.df_dest[self.df_dest['Country'] == country]
+        logger.debug('Continent {0} Country {1} experience {2}'.format(continent, country, experiences))
+        df_var = eval('self.df_dest_' + continent.lower())
+        df_local = df_var[df_var['Country'] == country]
 
         for cat,subcat in subexp_list.items():
             if len(subcat):
-                c_list = list(set(self.hwb_all_experiences()) - set(subcat))
+                c_list = list(set(self.hwb_all_experiences(continent)) - set(subcat))
                 df_local = df_local[(df_local[c_list] == False).all(axis=1) & (df_local[subcat] == True).all(axis=1)]
 
                 if df_local.empty:
@@ -492,7 +522,7 @@ class HWBase:
                     payload['Country'] = country
                     payload['Experiences'] = subcat
                     # Sort destination based on the ranking.
-                    #df_local = df_local.sort_values(['Rank'], ascending=False)
+                    df_local = df_local.sort_values(['Rank'], ascending=False)
                     dest_list = df_local.Destination.unique().tolist()
                     logger.debug('Destination list : {0}'.format(dest_list))
                     payload['Destination'] = dest_list[:(BATCH_SZ * 3)]

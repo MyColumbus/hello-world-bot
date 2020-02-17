@@ -35,12 +35,13 @@ class TBOT:
         self.logger = logging.getLogger()
         self.logger.info('Telegram Initialized')
 
-        self.all_experiences = self.hwbase.hwb_all_experiences()
-        self.all_euro_countries = self.hwbase.hwb_all_countries('EUROPE')
-        self.all_asia_countries = self.hwbase.hwb_all_countries('ASIA')
-        #self.all_euro_countries.remove('Monaco')
-        #self.all_euro_countries.remove('Ireland')
-        #self.all_euro_countries.remove('SanMarino')
+        # All countries by continent
+        self.all_Europe_countries = self.hwbase.hwb_all_countries('Europe')
+        self.all_Asia_countries = self.hwbase.hwb_all_countries('Asia')
+
+        # All experiences by continent
+        self.all_Europe_experiences = self.hwbase.hwb_all_experiences('Europe') 
+        self.all_Asia_experiences = self.hwbase.hwb_all_experiences('Asia')
 
 
     def __del__(self):
@@ -51,6 +52,11 @@ class TBOT:
         del self.hwbase
         del self.logger
 
+    ## 
+    # Default function #
+    ##
+    def tbot_default_method(self, query_result, payload):
+        self.logger.error('Function is not defined, check the callback function name')
 
     ##
     # All Menus #
@@ -71,6 +77,18 @@ class TBOT:
         contact_keyboard = KeyboardButton(text="Share My Contact", request_contact=True)
         custom_keyboard = [[ location_keyboard, contact_keyboard ]]
         reply_markup = ReplyKeyboardMarkup(custom_keyboard, one_time_keyboard=True, resize_keyboard=True)
+        return reply_markup
+
+
+    def tbot_continents_menu(self):
+        """
+        Continents Menu.
+        """
+        button_list = [
+                InlineKeyboardButton('Europe', callback_data='TELEGRAM_CONTINENT Europe'),
+                InlineKeyboardButton('Asia', callback_data='TELEGRAM_CONTINENT Asia'),
+            ]
+        reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
         return reply_markup
 
 
@@ -119,25 +137,21 @@ class TBOT:
         return reply_markup
 
 
-    def tbot_pick_continent(self):
-        """
-        Pick the continent of the world.
-        """
-        button_list = [
-                InlineKeyboardButton('Europe', callback_data='EUROPE'),
-                InlineKeyboardButton('Asia', callback_data='ASIA'),
-            ]
-        reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
-        return reply_markup
-
-
-    def tbot_main_menu(self):
+    def tbot_main_menu(self, continent):
         """
         Main or Start Menu.
         """
+        continent_name = ''
+        if continent == 'Europe':
+            continent_name = 'European'
+        elif continent == 'Asia':
+            continent_name = 'Asian'
+        else:
+            self.logger.error('Continent name is missing!')
+
         button_list = [
-                InlineKeyboardButton('By Country', callback_data='TELEGRAM_BY_COUNTRY'),
-                InlineKeyboardButton('By Experience', callback_data='TELEGRAM_BY_EXPERIENCE'),
+                InlineKeyboardButton(continent_name + ' Countries', callback_data='TELEGRAM_BY_COUNTRY ' + continent),
+                InlineKeyboardButton(continent_name + ' Experience', callback_data='TELEGRAM_BY_EXPERIENCE ' + continent),
                 InlineKeyboardButton('My Bucket List', callback_data='Show my wish list')
             ]
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
@@ -204,61 +218,55 @@ class TBOT:
         return reply_markup
 
 
-    def tbot_find_countries(self, req_categories, chat_id):
+
+    def tbot_find_countries(self, sess_data, chat_id):
         """Returns a string containing text with a response to the user
         with the list of countries.
-        Takes categories as input
+        Takes categories and continent as input
         """
         data = []
 
-        self.logger.debug('Create Itinerarary')
+        sugg, ret_data, err = self.hwbase.hwb_find_top_countries_for_experiences(sess_data['continent'], sess_data['category'])
+        self.logger.debug('RX Data {0}'.format(json.dumps(ret_data, indent=4)))
 
-        rsp, err = cbml.cbml_create_itinerary(req_categories, 1)
-
-        if len(rsp['Places']) == 0:
-            self.updater.bot.sendMessage(chat_id=chat_id, text='\n\n `This expereince is not available in any country`', parse_mode=telegram.ParseMode.MARKDOWN)
-            return
-
-        for idx in range(len(rsp['Places'])):
-            payload = {}
-            payload['Country'] = rsp['Places'][idx]['Country']
-            payload['Destination'] = rsp['Places'][idx]['Destination']
-            payload['Categories'] = rsp['Places'][idx]['Categories']
-            payload['TTD'] = rsp['Places'][idx]['TTD'][0]['ThingsToDo']
-            data.append(payload)
-
-        self.logger.debug(json.dumps(data, indent=4))
-
-        prev_cnty = ''
-        prev_cat = ''
         textToSend = ''
-        for r in data:
+        for r in ret_data:
 
             all_cat = ''
             idx = 0
             textToSend = ''
             reply_markup = ''
-            for cat in r['Categories']:
+            for cat in r['Experiences']:
                 if idx == 0:
                     all_cat += cat
                     idx += 1
                 else:
                     all_cat += ', ' + cat
 
-            if prev_cat != all_cat:
-                textToSend += "\n\n*For " + all_cat.upper() + " preferred countries*"
-                prev_cat = all_cat
+            textToSend += "\n\n*For " + all_cat.upper() + " preferred countries*"
 
-            if prev_cnty == r['Country']:
-                continue
-            else:
-                c_url = cbml.cbml_country_info_by_field(r['Country'], 'lonelyPlanetURL')
-                text_rsp = "\n\n*" + r['Country'].upper() + "* " + self.tbot_flag(cbml.cbml_country_info_by_field(r['Country'], 'CountryCode')) + " [Details](" + c_url + ")\n"
+            idx = 0
+            for cnt in r['Countries']:
+                if idx > 3:
+                    break
+                #c_url = self.hwbase.hwb_country_info_by_field(cnt, 'lonelyPlanetURL')
+                c_url = 'https://thehelloworld.xyz'
+                #text_rsp = "\n\n*" + cnt.upper() + "* " + self.tbot_flag(self.hwbase.hwb_country_info_by_field(cnt, 'CountryCode')) + " [Details](" + c_url + ")\n"
+                text_rsp = "\n\n*" + cnt.upper() + "* \n"
                 textToSend += text_rsp
-                reply_markup = self.tbot_select_country(r['Country'], all_cat)
+                reply_markup = self.tbot_select_country(cnt, all_cat)
                 self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
+                textToSend = ''
+                idx += 1
 
-                prev_cnty = r['Country']
+        if err != 200:
+            self.logger.debug('Suggestions are {0}'.format(sugg))
+            sugg_list = sugg[0]['Suggestion']
+            sug_0 = ', '.join(sugg_list[0])
+            sug_1 = ', '.join(sugg_list[1])
+            sug_2 = ', '.join(sugg_list[2])
+            sugg_text = '\n\n This expereince is not available in any country, my suggestions would be:\n\n*' + sug_0 + '*\n*' + sug_1 + '*\n*' + sug_2 + '*' 
+            self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
 
@@ -357,40 +365,37 @@ class TBOT:
 
 
 
-    def tbot_callback_commands(self, query_result, payload):
-        chat_id =payload.get('callback_query').get('message').get('chat').get('id')
+    def tbot_cb_by_options(self, query_result, payload):
+        chat_id = payload.get('callback_query').get('from').get('id')
+        continent = (query_result.get('parameters').get('continents_of_world'))
 
-        if 'TELEGRAM_BY_EXPERIENCE' == payload.get('callback_query').get('data'):
+        if 'TELEGRAM_BY_EXPERIENCE' in payload.get('callback_query').get('data'):
             self.hwdb.hwdb_user_session_delete(chat_id)
-            reply_markup = self.tbot_experience_menu(self.all_experiences)
+            self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', 'NULL', continent, 'I')
+            reply_markup = self.tbot_experience_menu(eval('self.all_' + continent + '_experiences'))
             self.updater.bot.sendMessage(chat_id=chat_id,
                     text='\n\nPlease select the experiences you would like to have during your vacation and hit DONE.', reply_markup=reply_markup)
 
-        elif 'TELEGRAM_BY_COUNTRY' == payload.get('callback_query').get('data'):
-            reply_markup = self.tbot_by_country_menu(self.all_countries)
+        elif 'TELEGRAM_BY_COUNTRY' in payload.get('callback_query').get('data'):
+            reply_markup = self.tbot_by_country_menu(eval('self.all_' + continent + '_countries'))
             self.updater.bot.send_message(chat_id=chat_id,
                     text='\n\nPick the country you would like to explore.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
         elif 'bycountry_' in payload.get('callback_query').get('data'):
             tokens = payload.get('callback_query').get('data').split('_', 2)
             country = tokens[1]
-            supported_cat = cbml.cbml_all_categories_a_country(country)
+            continent = self.hwbase.hwb_get_continent_for_countries(country)
+
+            supported_cat = self.hwbase.hwb_all_experiences_for_a_country(country)
             self.logger.debug('Categories for {0} are {1}'.format(country, supported_cat))
 
             self.hwdb.hwdb_user_session_delete(chat_id)
-            self.hwdb.hwdb_user_session_upsert(chat_id, country, 'NULL', 'NULL', 'I')
+            self.hwdb.hwdb_user_session_upsert(chat_id, country, 'NULL', 'NULL', continent, 'I')
 
             reply_markup = self.tbot_experience_menu(supported_cat)
             self.updater.bot.sendMessage(chat_id=chat_id,
                     text='\n\nPlease select the experiences you would like to have *' + country.upper() + '* during your vacation and hit DONE.', reply_markup=reply_markup,
                     parse_mode=telegram.ParseMode.MARKDOWN)
-
-        elif 'When to visit' in payload.get('callback_query').get('data'):
-            country = query_result.get('parameters').get('geo-country')
-            when_to_visit_rsp = cbml.cbml_country_info_by_field(country, 'WhenToVisit')
-
-            self.updater.bot.sendMessage(chat_id=chat_id,
-                    text='\n\n*' + country + ' :* ' + when_to_visit_rsp, parse_mode=telegram.ParseMode.MARKDOWN)
 
         elif 'Activities to do ' in payload.get('callback_query').get('data'):
             country = query_result.get('parameters').get('geo-country')
@@ -402,44 +407,69 @@ class TBOT:
             self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nOops. Please check your command and try again.')
 
 
-    ##
-    # Commands #
-    ##
-    def tbot_commands(self, payload):
-        chat_id = payload.get('chat').get('id')
 
-        if payload.get('text') == '/start':
-            reply_markup = self.tbot_main_menu()
-            self.updater.bot.send_message(chat_id=chat_id, text='Hello ' + payload.get('from').get('first_name') + ',\nHow would you like to explore places *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
-            f_name = payload.get('from').get('first_name')
-            l_name = payload.get('from').get('last_name')
-            username = payload.get('from').get('username')
-            self.hwdb.hwdb_columbus_user_bucketlist_upsert(chat_id, f_name, l_name, 'NULL', 'NULL', username)
+    def tbot_cb_find_places(self, query_result, payload):
+        """
+        This method parse Telegram find_places callback intents.
+        """
+
+        self.logger.debug('callback data - {0}'.format(payload.get('callback_query').get('data')))
+        chat_id = payload.get('callback_query').get('message').get('chat').get('id')
+
+        if 'select the experiences' in payload.get('callback_query').get('message').get('text'):
+            sess_data = self.hwdb.hwdb_user_session_select(chat_id)
+          
+            if sess_data['country'] == 'NULL':
+                self.logger.debug('Received experience : {0} expereince in the user list {1}'.format(payload.get('callback_query').get('data'), sess_data['category']))
+                if 'DONE' in payload.get('callback_query').get('data'):
+                    if len(sess_data['category']) == 0:
+                        self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nPlease select atleast one experience', parse_mode=telegram.ParseMode.MARKDOWN)
+                        return 'ok'
+                    self.tbot_find_countries(sess_data, chat_id)
+                    for cat in sess_data['category']:
+                        self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', cat, 'NULL', 'D')
+                else:
+                    category = payload.get('callback_query').get('data')
+                    if len(list(set(sess_data['category']) & set([category]))) == 0:
+                        self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, sess_data['continent'], 'I')
+                    else:
+                        self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, 'NULL', 'D')
+
+                    rec = self.hwdb.hwdb_user_session_select(chat_id)
+                    reply_markup = self.tbot_update_experience_menu(eval('self.all_' + sess_data['continent'] + '_experiences'), rec['category'])
+                    self.updater.bot.edit_message_reply_markup(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'),
+                            reply_markup=reply_markup)
+            else:
+                if 'DONE' in payload.get('callback_query').get('data'):
+                    if len(sess_data['category']) == 0:
+                        self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nPlease select atleast one experience', parse_mode=telegram.ParseMode.MARKDOWN)
+                        return 'ok'
+                    self.tbot_explore_a_country(chat_id, sess_data['country'], sess_data['category'])
+                    for cat in sess_data['category']:
+                        self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', cat, 'NULL', 'D')
+
+                else:
+                    self.logger.debug('SELECTED Country : {0}'.format(sess_data['country']))
+                    supported_cat = self.hwbase.hwb_all_experiences_for_a_country(sess_data['country'])
+                    category = payload.get('callback_query').get('data')
+                    if len(list(set(sess_data['category']) & set([category]))) == 0:
+                        self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'NULL', category, 'I')
+                    else:
+                        self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, 'D')
+
+                    rec = self.hwdb.hwdb_user_session_select(chat_id)
+                    reply_markup = self.tbot_update_experience_menu(supported_cat, rec['category'])
+                    self.updater.bot.edit_message_reply_markup(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'),
+                            reply_markup=reply_markup)
+
+        elif 'Explore country' in payload.get('callback_query').get('data'):
+            categories = query_result.get('parameters').get('experiences')
+            country = query_result.get('outputContexts')[0].get('parameters').get('geo-country')
+
+            self.tbot_explore_a_country(chat_id, country, categories)
 
         else:
-            self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nOops. Please check your command and try again.')
-
-
-
-    ##
-    # Messages to support
-    # 1. Welcome
-    # 2. Country, activities, city
-    ##
-    def tbot_messages(self, query_result, payload):
-        chat_id = payload.get('chat').get('id')
-        req_categories = []
-        textToSpeech_rsp = ''
-
-        req_categories = query_result.get('parameters').get('experiences')
-        country = query_result.get('parameters').get('geo-country')
-
-        if req_categories and country:
-            self.tbot_explore_a_country(chat_id, country, req_categories)
-        else:
-            self.logger.error('Parameters are not set properly country : {0} categories : {1}'.format(country, req_categories))
-
-
+            self.logger.error('Unsupported callback message!')
 
     ##
     # Bucket list operations.
@@ -518,16 +548,60 @@ class TBOT:
 
 
 
+    ## 
+    # Callback Intents #
+    ##
+    def tbot_cb_pick_continents(self, query_result, payload):
+        chat_id = payload.get('callback_query').get('from').get('id')
+        continent = query_result.get('parameters').get('continents_of_world')
+
+        reply_markup = self.tbot_main_menu(continent)
+        self.updater.bot.send_message(chat_id=chat_id, text='How would you like to explore ' + continent.upper() + ' *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+
+
+
+    callbackIntents = {
+            'input.pick_continent': tbot_cb_pick_continents,
+            'input.bucket_list_ops': tbot_bucketlist_processing,
+            'input.pick_by_option': tbot_cb_by_options,
+            'input.telegram_by_country_name': tbot_cb_by_options,
+            'input.find_places': tbot_cb_find_places,
+            'find_places.find_places-followup': tbot_cb_find_places,
+    }
+
+
+    def tbot_call_callback_intents_methods(self, query_result, payload):
+        action = query_result.get('action')
+        f = lambda self, a, qr, p : self.callbackIntents.get(a, lambda a, qr, p : self.tbot_default_method(qr, p))(self, qr, p)
+        f(self, action, query_result, payload)
+
+
 
     def tbot_process_telegram_callback_intents(self, query_result, payload):
         """
         This method parse all the Telegram specific WITH callback intents.
         """
-
-        if ((query_result.get('action') == 'input.telegram_by_country') or
-            (query_result.get('action') == 'input.telegram_by_experience') or
+        if ((query_result.get('action') == 'input.pick_by_option') or
+            (query_result.get('action') == 'input.pick_continent') or
             (query_result.get('action') == 'input.telegram_by_country_name') or
-            (query_result.get('action') == 'input.bucket_list_show_ops') or
+            (query_result.get('action') == 'input.bucket_list_ops') or
+            (query_result.get('action') == 'find_places.find_places-followup') or
+            (query_result.get('action') == 'input.find_places') or
+            (query_result.get('action') == 'input.when_to_visit') or
+            (query_result.get('action') == 'input.activites_to_do')):
+
+            self.logger.debug('Intent without callback : {0}'.format(query_result.get('action')))
+            self.tbot_call_callback_intents_methods(query_result, payload)
+
+
+    def TT_old_tbot_process_telegram_callback_intents(self, query_result, payload):
+        """
+        This method parse all the Telegram specific WITH callback intents.
+        """
+
+        if ((query_result.get('action') == 'input.pick_by_option') or
+            (query_result.get('action') == 'input.pick_continent') or
+            (query_result.get('action') == 'input.telegram_by_country_name') or
             (query_result.get('action') == 'input.bucket_list_ops') or
             (query_result.get('action') == 'find_places.find_places-followup') or
             (query_result.get('action') == 'input.find_places') or
@@ -604,6 +678,59 @@ class TBOT:
                 self.logger.error('Unsupported callback message!')
 
 
+    ##
+    # Commands #
+    ##
+    def tbot_start_command(self, query_result, payload):
+        chat_id = payload.get('chat').get('id')
+
+        if payload.get('text') == '/start':
+            reply_markup = self.tbot_continents_menu()
+            self.updater.bot.send_message(chat_id=chat_id, text='Hello *' + payload.get('from').get('first_name') + '*,\nWhat would be your preferred continent for travel?', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+            f_name = payload.get('from').get('first_name')
+            l_name = payload.get('from').get('last_name')
+            username = payload.get('from').get('username')
+            self.hwdb.hwdb_columbus_user_bucketlist_upsert(chat_id, f_name, l_name, 'NULL', 'NULL', username)
+
+        else:
+            self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nOops. Please check your command and try again.')
+
+
+    def tbot_user_settings(self, query_result, payload):
+        chat_id = payload.get('chat').get('id')
+
+        user_country = query_result.get('parameters').get('geo-country')
+        chat_id = payload.get('from').get('id')
+        self.hwdb.hwdb_columbus_user_bucketlist_upsert(chat_id, 'NULL', 'NULL', 'NULL', user_country, 'NULL')
+        self.logger.debug('User updated his/her native country {0}'.format(user_country))
+
+
+    def tbot_continent_menu(self, query_result, payload):
+        chat_id = payload.get('chat').get('id')
+        continent = query_result.get('parameters').get('continents_of_world')
+
+        reply_markup = self.tbot_main_menu(continent)
+        self.updater.bot.send_message(chat_id=chat_id, text='How would you like to explore ' + continent.upper() + ' *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+
+
+
+    ##
+    # Messages to support
+    # 1. Welcome
+    # 2. Country, activities, city
+    ##
+    def tbot_messages(self, query_result, payload):
+        chat_id = payload.get('chat').get('id')
+        req_categories = []
+        textToSpeech_rsp = ''
+
+        req_categories = query_result.get('parameters').get('experiences')
+        country = query_result.get('parameters').get('geo-country')
+
+        if req_categories and country:
+            self.tbot_explore_a_country(chat_id, country, req_categories)
+        else:
+            self.logger.error('Parameters are not set properly country : {0} categories : {1}'.format(country, req_categories))
 
 
     def tbot_process_telegram_intents(self, query_result, payload):
@@ -613,32 +740,28 @@ class TBOT:
 
         if ((query_result.get('action') == 'input.cb_welcome') or
             (query_result.get('action') == 'find_places.find_places-followup') or
-            (query_result.get('action') == 'input.find_places')):
+            (query_result.get('action') == 'input.find_places') or
+            (query_result.get('action') == 'settings.country-name') or
+            (query_result.get('action') == 'input.pick_continent')):
 
             self.logger.debug('Intent without callback : {0}'.format(query_result.get('action')))
-            if payload.get('text')[0] == '/':
-                self.tbot_commands(payload)
-            else:
-                self.tbot_messages(query_result, payload)
-
-        elif (query_result.get('action') == 'input.when_to_visit'):
-
-            chat_id = payload.get('from').get('id')
-            self.logger.debug('Intent without callback : {0}'.format(query_result.get('action')))
-            country = query_result.get('parameters').get('geo-country')
-            when_to_visit_rsp = cbml.cbml_country_info_by_field(country, 'WhenToVisit')
-
-            self.updater.bot.sendMessage(chat_id=chat_id,
-                    text='\n\n*' + country + ' :* ' + when_to_visit_rsp, parse_mode=telegram.ParseMode.MARKDOWN)
-
-        elif (query_result.get('action') == 'settings.country-name'):
-            user_country = query_result.get('parameters').get('geo-country')
-            chat_id = payload.get('from').get('id')
-            self.hwdb.hwdb_columbus_user_bucketlist_upsert(chat_id, 'NULL', 'NULL', 'NULL', user_country, 'NULL')
-            self.logger.debug('User updated his/her native country {0}'.format(user_country))
+            self.tbot_call_normal_intents_methods(query_result, payload)
 
         else:
             self.logger.debug('Bad message received')
+
+
+    normalIntents = {
+            'input.cb_welcome' : tbot_start_command,
+            'settings.country-name' : tbot_user_settings,
+            'input.pick_continent' : tbot_continent_menu
+    }
+
+
+    def tbot_call_normal_intents_methods(self, query_result, payload):
+        action = query_result.get('action')
+        f = lambda self, a, qr, p : self.normalIntents.get(a, lambda a, qr, p : self.tbot_default_method(qr, p))(self, qr, p)
+        f(self, action, query_result, payload)
 
 
 
@@ -667,6 +790,7 @@ class TBOT:
 
         # 2 & 3. Intent without callback
         else:
+            #self.normalIntents.get(query_result.get('action'), lambda : self.default())()
             self.tbot_process_telegram_intents(query_result, payload)
 
 
