@@ -6,6 +6,8 @@ Till date there is single version of collected data and the naming convention is
 
 Data can be found in `data` directory with their respective version number. 
 
+Due to large size of the data, developer has to wget it to `data` directory in the repo before use. Data is stored [here](https://www.dropbox.com/sh/kho4jd47842khi3/AACoZXFzjns7WnK8ILs8DMSca). 
+
 # Production Deployment
 1. Create digital ocean droplet (with standalone login access), login with root access and create user:
 ```
