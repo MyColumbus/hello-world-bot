@@ -49,8 +49,8 @@ class HWDocs:
             sys.exit()
 
         # Start drive and docs services.
-        self.drive_service = build('drive', 'v3', credentials=self.creds)
-        self.docs_service = build('docs', 'v1', credentials=self.creds)
+        self.drive_service = build('drive', 'v3', credentials=self.creds, cache_discovery=False)
+        self.docs_service = build('docs', 'v1', credentials=self.creds, cache_discovery=False)
 
 
     def hwd_pick_a_template(self, country, platform, uid):
@@ -71,36 +71,38 @@ class HWDocs:
         return document_copy_id
 
 
-    def hwd_populate_data(self, doc_id):
+    def hwd_insert_replace_txt(self, key, value):
         """
-        Populdate itinerary data in the picked template.
+        Replace text request structure. 
         """
-
-        country = 'France'
-
-        requests = [
-             {
-                'replaceAllText': {
-                    'containsText': {
-                        'text': '{{country}}',
-                        'matchCase':  'true'
-                    },
-                    'replaceText': country,
-                }}
-        ]
-
-        result = self.docs_service.documents().batchUpdate(
-            documentId=doc_id, body={'requests': requests}).execute()
+        req = {'replaceAllText': {
+                     'containsText': {
+                         'text': '{{' + key + '}}',
+                         'matchCase':  'true'
+                     },
+                     'replaceText': value,
+                 }}
+        return req
 
 
-    def hwd_insert_hyperlink(self, doc_id, start_idx, end_idx, url):
+
+    def hwd_batch_update(self, doc_id, requests):
+         """
+         Populdate itinerary data in the picked template.
+         """
+
+         result = self.docs_service.documents().batchUpdate(
+             documentId=doc_id, body={'requests': requests}).execute()
+
+
+
+    def hwd_insert_hyperlink(self, start_idx, end_idx, url):
         """
         Insert hyperlink to the text for a given range in the
         document body.
         """
 
-        requests = [
-          {
+        return {
            "updateTextStyle": {
             "textStyle": {
              "link": {
@@ -112,11 +114,17 @@ class HWDocs:
              "endIndex": end_idx
             },
             "fields": "link"
-           }}
-        ]
+        }}
+
+
+    def hwd_batch_update_data(self, requests, doc_id):
+        """
+        Batch update itinerary data in the picked template.
+        """
 
         result = self.docs_service.documents().batchUpdate(
             documentId=doc_id, body={'requests': requests}).execute()
+
 
 
     def hwd_get_text_range_idx(self, doc_id, match_text):

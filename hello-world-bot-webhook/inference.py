@@ -14,8 +14,6 @@ import json
 from datetime import datetime
 from itertools import combinations
 
-from hw_docs.hw_drive_auth import HWDocs
-
 from logs import HWLogs
 HWLogs(logging.DEBUG)
 logger = logging.getLogger()
@@ -57,8 +55,8 @@ class HWBase:
         self.ts_experiences = []
 
         # EUROPE Dataframes
-        self.df_dest_europe = pd.read_csv('data/europe/Destination_1_0.csv', low_memory=False, encoding='utf-8')
-        self.df_tsights_europe = pd.read_csv('data/europe/TopSights_1_0.csv', low_memory=False, encoding='utf-8')
+        self.df_dest_europe = pd.read_csv('data/europe/Destination_1_1.csv', low_memory=False, encoding='utf-8')
+        self.df_tsights_europe = pd.read_csv('data/europe/TopSights_1_1.csv', low_memory=False, encoding='utf-8')
 
         # ASIA Dataframes
         self.df_dest_asia = pd.read_csv('data/asia/Destination_1_0.csv', low_memory=False, encoding='utf-8')
@@ -481,7 +479,7 @@ class HWBase:
 
 
 
-    def hwb_find_destination_for_experiences(self, continent, country, experiences):
+    def hwb_find_destination_for_experiences(self, country, experiences):
         """
         Find any countries for matching experience(s).
         The logic is as follows:
@@ -493,6 +491,7 @@ class HWBase:
         err = 200
 
         # Sanity checks:
+        continent = self.hwb_get_continent_for_countries(country)
         if not (set(self.hwb_all_experiences(continent)) & set(experiences)):
             return ret_suggestions, ret_data, 400
 
@@ -511,7 +510,7 @@ class HWBase:
 
                 if df_local.empty:
                     sugg = {}
-                    top_sugg = self.hwb_experience_combinations(subcat, len(subcat))
+                    top_sugg = self.hwb_experience_combinations(continent, subcat, len(subcat))
                     sugg['Suggestion'] = top_sugg
                     ret_suggestions.append(sugg)
                     logger.info('Top expereinces suggestions to user {0}'.format(list(top_sugg[0])))
