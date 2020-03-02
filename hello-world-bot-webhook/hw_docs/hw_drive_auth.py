@@ -53,6 +53,7 @@ class HWDocs:
         self.docs_service = build('docs', 'v1', credentials=self.creds, cache_discovery=False)
 
 
+
     def hwd_pick_a_template(self, country, platform, uid):
         """
         There are list of templates that a itinerary can be created from.
@@ -71,7 +72,8 @@ class HWDocs:
         return document_copy_id
 
 
-    def hwd_insert_replace_txt(self, key, value):
+
+    def hwd_replace_txt(self, key, value):
         """
         Replace text request structure. 
         """
@@ -82,17 +84,8 @@ class HWDocs:
                      },
                      'replaceText': value,
                  }}
+
         return req
-
-
-
-    def hwd_batch_update(self, doc_id, requests):
-         """
-         Populdate itinerary data in the picked template.
-         """
-
-         result = self.docs_service.documents().batchUpdate(
-             documentId=doc_id, body={'requests': requests}).execute()
 
 
 
@@ -117,15 +110,6 @@ class HWDocs:
         }}
 
 
-    def hwd_batch_update_data(self, requests, doc_id):
-        """
-        Batch update itinerary data in the picked template.
-        """
-
-        result = self.docs_service.documents().batchUpdate(
-            documentId=doc_id, body={'requests': requests}).execute()
-
-
 
     def hwd_get_text_range_idx(self, doc_id, match_text):
 
@@ -148,6 +132,28 @@ class HWDocs:
                         endIdx = e.get('endIndex')
 
         return startIdx, endIdx
+
+
+    def hwd_populate_data(self, doc_id, itinerary_data):
+        """
+        Here populate data for itinerary.
+        """
+        requests = []
+        # 1. Title
+        requests.append(self.hwd_replace_txt('country', 'India'))
+
+        # Update document.
+        self.hwd_batch_update(doc_id, requests)
+
+
+
+    def hwd_batch_update(self, doc_id, requests):
+         """
+         Populdate itinerary data in the picked template.
+         """
+
+         result = self.docs_service.documents().batchUpdate(
+             documentId=doc_id, body={'requests': requests}).execute()
 
 
 #docs = HWDocs()

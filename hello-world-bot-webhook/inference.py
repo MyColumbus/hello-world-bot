@@ -55,8 +55,8 @@ class HWBase:
         self.ts_experiences = []
 
         # EUROPE Dataframes
-        self.df_dest_europe = pd.read_csv('data/europe/Destination_1_1.csv', low_memory=False, encoding='utf-8')
-        self.df_tsights_europe = pd.read_csv('data/europe/TopSights_1_1.csv', low_memory=False, encoding='utf-8')
+        self.df_dest_europe = pd.read_csv('data/europe/Destination_1_0.csv', low_memory=False, encoding='utf-8')
+        self.df_tsights_europe = pd.read_csv('data/europe/TopSights_1_0.csv', low_memory=False, encoding='utf-8')
 
         # ASIA Dataframes
         self.df_dest_asia = pd.read_csv('data/asia/Destination_1_0.csv', low_memory=False, encoding='utf-8')
@@ -143,7 +143,7 @@ class HWBase:
 
         # FIXME: Remove unwated space in the country columns.
         df_dest['Country'] = df_dest['Country'].astype(str)
-        df_dest['Country'] = df_dest.Country.apply(lambda x: x.replace(' ',''))
+        #df_dest['Country'] = df_dest.Country.apply(lambda x: x.replace(' ',''))
         df_dest['Country'] = df_dest['Country'].astype('category')
 
         # Convert to booleans
@@ -210,9 +210,6 @@ class HWBase:
         # Drop constant columns.
         df_dest = self.hwb_drop_constant_value_column(df_dest)
 
-        # Convert 'NaN' to empty string
-        #df_dest['Description'] = df_dest.Description.fillna('')
-
 
         #
         # 2. Top Sights Data
@@ -220,7 +217,7 @@ class HWBase:
 
         # FIXME: Remove unwated space in the country columns.
         df_tsights['Country'] = df_tsights['Country'].astype(str)
-        df_tsights['Country'] = df_tsights.Country.apply(lambda x: x.replace(' ',''))
+        #df_tsights['Country'] = df_tsights.Country.apply(lambda x: x.replace(' ',''))
         df_tsights['Country'] = df_tsights['Country'].astype('category')
 
         # Convert all to mins.
@@ -245,6 +242,7 @@ class HWBase:
         df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace('-',''))
         df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace('(',''))
         df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace(')',''))
+        df_tsights['NumberOfReview'] = df_tsights.NumberOfReview.apply(lambda x: x.replace('avis',''))
         df_tsights['NumberOfReview'] = df_tsights['NumberOfReview'].astype(float)
 
         # Drop 'zero' value columns
@@ -335,7 +333,6 @@ class HWBase:
         exp = list(eval('self.df_dest_' + continent.lower() + '.columns.values'))
         exp.remove('Country')
         exp.remove('Destination')
-        exp.remove('Description')
         exp.remove('Rank')
         return exp
 
@@ -348,7 +345,7 @@ class HWBase:
         df_var = eval('self.df_dest_' + continent.lower())
         df_country = df_var[df_var['Country'] == country]
         df_country = self.hwb_drop_constant_value_column(df_country)
-        df_country = df_country.drop(['Destination', 'Description', 'Rank'], axis=1)
+        df_country = df_country.drop(['Destination', 'Rank'], axis=1)
         return list(df_country.columns.values)
 
 
