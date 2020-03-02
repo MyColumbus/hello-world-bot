@@ -84,7 +84,7 @@ User=mdeore
 Group=www-data
 WorkingDirectory=/home/mdeore/hwbot
 Environment="PATH=/home/mdeore/hwbot/hwbot/bin"
-ExecStart=/home/mdeore/hwbot/hwbot/bin/gunicorn --workers 3 --bind unix:hwbot.sock -m 007 wsgi:app
+ExecStart=/home/mdeore/hwbot/hwbot/bin/gunicorn --workers 3 --log-level=debug --timeout 60 --bind unix:hwbot.sock -m 007 wsgi:app
 
 [Install]
 WantedBy=multi-user.target
