@@ -69,7 +69,7 @@ class TBOT:
         Country Flag Emoji code
         """
         code = code.upper()
-        return chr(ord(code[0]) + __flag_offset) + chr(ord(code[1]) + __flag_offset)
+        return chr(ord(code[0]) + self.__flag_offset) + chr(ord(code[1]) + self.__flag_offset)
 
 
     def tbot_get_location_n_contact(self):
@@ -144,17 +144,10 @@ class TBOT:
         """
         Main or Start Menu.
         """
-        continent_name = ''
-        if continent == 'Europe':
-            continent_name = 'European'
-        elif continent == 'Asia':
-            continent_name = 'Asian'
-        else:
-            self.logger.error('Continent name is missing!')
 
         button_list = [
-                InlineKeyboardButton(continent_name + ' Countries', callback_data='TELEGRAM_BY_COUNTRY ' + continent),
-                InlineKeyboardButton(continent_name + ' Experience', callback_data='TELEGRAM_BY_EXPERIENCE ' + continent),
+                InlineKeyboardButton('By Countries', callback_data='TELEGRAM_BY_COUNTRY ' + continent),
+                InlineKeyboardButton('By Experience', callback_data='TELEGRAM_BY_EXPERIENCE ' + continent),
                 InlineKeyboardButton('My Trips', callback_data='Show my wish list')
             ]
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
@@ -175,28 +168,6 @@ class TBOT:
         return reply_markup
 
 
-    def tbot_select_country_menu(self, country, all_cat):
-        """
-        By Country --> Selected Country expereinces.
-        """
-        cat_in_country = self.hwbase.hwb_all_experiences_for_a_country(country)
-        c_list = list(set(cat_in_country) & set(all_cat))
-        cat_str = ''
-        for cat in c_list:
-            if not cat_str:
-                cat_str += cat
-            else:
-                cat_str += ', ' + cat
-
-        button_list = [
-                InlineKeyboardButton('Explore ' + country.upper(), callback_data='Explore country ' + country + ' ' + cat_str),
-            ]
-        self.logger.debug('Callback Text: Explore country {0} {1} '.format(country, cat_str))
-        reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
-        return reply_markup
-
-
-
     def tbot_create_itinerary_menu(self, country, all_cat):
         """
         Destination menu : Add to bucketlist or Best time to visit.
@@ -204,14 +175,10 @@ class TBOT:
         cat_in_country = self.hwbase.hwb_all_experiences_for_a_country(country)
         c_list = list(set(cat_in_country) & set(all_cat))
         cat_str = ''
-        for cat in c_list:
-            if not cat_str:
-                cat_str += cat
-            else:
-                cat_str += ', ' + cat
+        cat_str = ' '.join(c_list)
 
         button_list = [
-                InlineKeyboardButton('Create Itinerary', callback_data='Create Itinerary ' + cat_str),
+                InlineKeyboardButton('Create Itinerary', callback_data='Create Itinerary ' + country + ' ' + cat_str),
             ]
         self.logger.debug('Callback: Create Itinerary {0} {1}'.format(country, cat_str))
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
@@ -246,14 +213,10 @@ class TBOT:
         cat_in_country = self.hwbase.hwb_all_experiences_for_a_country(country)
         c_list = list(set(cat_in_country) & set(all_cat))
         cat_str = ''
-        for cat in c_list:
-            if not cat_str:
-                cat_str += cat
-            else:
-                cat_str += ', ' + cat
+        cat_str = ' '.join(c_list)
 
         button_list = [
-                InlineKeyboardButton('Create Itinerary ', callback_data='Create Itinerary '+ country + ' ' + cat_str),
+                InlineKeyboardButton('Create Itinerary ', callback_data='Create Itinerary ' + country + ' ' + cat_str),
             ]
         self.logger.debug('Callback: Create Itinerary by country: {0} {1}'.format(country, cat_str))
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
@@ -283,45 +246,35 @@ class TBOT:
 
         sugg, ret_data, err = self.hwbase.hwb_find_top_countries_for_experiences(sess_data['continent'], sess_data['category'])
         self.logger.debug('RX Data {0}'.format(json.dumps(ret_data, indent=4)))
+        self.logger.debug('Suggestions Data {0}'.format(json.dumps(sugg, indent=4)))
 
-        textToSend = ''
-
+        prev_exp_str = ''
         for rec in ret_data:
-            idx = 0
-            all_exp = ''
-            for exp in rec['Experiences']:
-                if idx == 0:
-                    all_exp += exp
-                    idx += 1
-                else:
-                    all_exp += ', ' + exp
+            text_rsp = ''
+            textToSend = ''
+            exp_str = ', '.join(rec['Experiences'])
+            if prev_exp_str != exp_str:
+                textToSend += '\n\nFor *' + exp_str.upper() + '* preferred countries'
+                prev_exp_str = exp_str
 
-            textToSend += "\n\nFor *" + all_exp.upper() + "* preferred countries"
+            country = rec['Country']
+            country_url = self.hwbase.hwb_country_info_by_field(country, 'lonelyPlanetURL')
+            if not country_url:
+                country_url = ''
 
-
-            idx = 0
-            country_list = rec['Countries']
-            for cnt in country_list:
-                if idx > 2:
-                    break
-                #c_url = self.hwbase.hwb_country_info_by_field(cnt, 'lonelyPlanetURL')
-                c_url = 'https://thehelloworld.xyz'
-                #text_rsp = "\n\n*" + cnt.upper() + "* " + self.tbot_flag(self.hwbase.hwb_country_info_by_field(cnt, 'CountryCode')) + " [Details](" + c_url + ")\n"
-                text_rsp = "\n\n*" + cnt.upper() + "* \n"
-                textToSend += text_rsp
-                reply_markup = self.tbot_select_country_menu(cnt, rec['Experiences'])
-                self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
-                textToSend = ''
-                idx += 1
-
+            text_rsp = '\n\n[' + country.upper() + '](' + country_url + ') ' + self.tbot_flag(self.hwbase.hwb_country_info_by_field(country, 'CountryCode')) + '\n'
+            text_rsp += '( _' + ' | '.join(rec['Destinations']) + '_ )'
+            textToSend += text_rsp
+            reply_markup = self.tbot_create_itinerary_menu(country, rec['Experiences'])
+            self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
 
         if err != 200:
+            sug_str = ''
             self.logger.debug('Suggestions are {0}'.format(sugg))
             sugg_list = sugg[0]['Suggestion']
-            sug_0 = ', '.join(sugg_list[0])
-            sug_1 = ', '.join(sugg_list[1])
-            sug_2 = ', '.join(sugg_list[2])
-            sugg_text = '\n\n This expereince is not available in any country, my suggestions would be:\n\n*' + sug_0 + '*\n*' + sug_1 + '*\n*' + sug_2 + '*' 
+            for i in range(len(sugg_list)):
+                sug_str += '\n' + ', '.join(sugg_list[i]) + ''
+            sugg_text = '\n\n Not all combinations of expereinces are available at one location, my suggestions would be:\n' + sug_str 
             self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
@@ -331,7 +284,7 @@ class TBOT:
         with the destination other details.
         Takes the country and categories as input
         """
-        textToSpeech_rsp = ''
+        textToSend = ''
         full_cat_list = []
 
         #country = country.replace(' ', '')
@@ -340,49 +293,32 @@ class TBOT:
         self.logger.debug('Rx parameters: categories {0} country {1}'.format(categories, country))
 
         if country:
-            _, ret_data, err = self.hwbase.hwb_find_destination_for_experiences(country, categories)
+            sugg, ret_data, err = self.hwbase.hwb_find_destination_for_experiences(country, categories)
             self.logger.debug('RX Data {0}'.format(json.dumps(ret_data, indent=4)))
         else:
             self.logger.error('Country name is empty')
-            return textToSpeech_rsp, full_cat_list
+            return textToSend, full_cat_list
 
 
-
-        textToSend = ''
-        exp_str = ''
-        idx = 0
-        textToSend = ''
-        reply_markup = ''
-
-        experiences_list = ret_data[0]['Experiences']
-        for exp in experiences_list:
-            if idx == 0:
-                exp_str += exp
-                idx += 1
-            else:
-                exp_str += ', ' + exp
-
-        textToSend = '\n\nFor *' + exp_str.upper() + '* experiences in *' + country.upper() + '* preferred destinations are:\n'
-
-        idx = 0
-        destinations_list = ret_data[0]['Destination']
-        for dest in destinations_list:
-            if idx > 2:
-                break
-            #c_url = self.hwbase.hwb_country_info_by_field(cnt, 'lonelyPlanetURL')
-            c_url = 'https://thehelloworld.xyz'
-            #text_rsp = "\n\n*" + cnt.upper() + "* " + self.tbot_flag(self.hwbase.hwb_country_info_by_field(cnt, 'CountryCode')) + " [Details](" + c_url + ")\n"
-            text_rsp = '\n\n*' + str(idx + 1) + '. ' + dest + '* \n'
+        textToSend = '\n\n In *' + country.upper() + '*:\n'
+        for rec in ret_data:
+            text_rsp = ''
+            exp_str = ', '.join(rec['Experiences'])
+            textToSend += '\n\nFor *' + exp_str.upper() + '* preferred destinations are:\n'
+            text_rsp = '( _' + ' | '.join(rec['Destinations']) + '_ )'
             textToSend += text_rsp
-            idx += 1
+            reply_markup = self.tbot_create_itinerary_menu(country, rec['Experiences'])
+            self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
+            textToSend = ''
 
-        if by_country:
-            reply_markup = self.tbot_by_country_create_itinerary_menu(country, experiences_list)
-        
-        else:
-            reply_markup = self.tbot_create_itinerary_menu(country, experiences_list)
-
-        self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
+        if err != 200:
+            sug_str = ''
+            self.logger.debug('Suggestions are {0}'.format(sugg))
+            sugg_list = sugg[0]['Suggestion']
+            for i in range(len(sugg_list)):
+                sug_str += '\n' + ', '.join(sugg_list[i]) + ''
+            sugg_text = '\n\n Not all combinations of expereinces are available at one location, my suggestions would be:\n' + sug_str 
+            self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
 
@@ -390,8 +326,15 @@ class TBOT:
         chat_id = payload.get('callback_query').get('from').get('id')
         continent = query_result.get('parameters').get('continents_of_world')
 
+        if continent.lower() == 'europe':
+            continent_text = '_There simply is no way to tour Europe and not be awestruck by its natural beauty, epic history and dazzling artistic and culinary diversity._'
+        elif continent.lower() == 'asia':
+            continent_text = '_From the nomadic steppes of Kazakhstan to the frenetic streets of Hanoi, Asia is a continent so full of intrigue, adventure, solace and spirituality that it has fixated and confounded travellers for centuries._'
+        else:
+            continent_text = ''
+
         reply_markup = self.tbot_main_menu(continent)
-        self.updater.bot.send_message(chat_id=chat_id, text='How would you like to explore ' + continent.upper() + ', *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+        self.updater.bot.send_message(chat_id=chat_id, text='\n\n' + continent_text + '\n\nHow would you like to explore ' + continent.upper() + ', *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
     ##
@@ -484,6 +427,7 @@ class TBOT:
                     text='\n\nPlease select the experiences you would like to have during your vacation and hit DONE.', reply_markup=reply_markup)
 
         elif 'TELEGRAM_BY_COUNTRY' in payload.get('callback_query').get('data'):
+            self.hwdb.hwdb_user_session_delete(chat_id)
             reply_markup = self.tbot_by_country_menu(eval('self.all_' + continent + '_countries'))
             self.updater.bot.send_message(chat_id=chat_id,
                     text='\n\nPick the country you would like to explore.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
@@ -554,7 +498,7 @@ class TBOT:
                     supported_cat = self.hwbase.hwb_all_experiences_for_a_country(sess_data['country'])
                     category = payload.get('callback_query').get('data')
                     if len(list(set(sess_data['category']) & set([category]))) == 0:
-                        self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'NULL', category, 'NULL', 'I')
+                        self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'NULL', category, sess_data['continent'], 'I')
                     else:
                         self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, 'NULL', 'D')
 
@@ -567,7 +511,6 @@ class TBOT:
             categories = query_result.get('parameters').get('experiences')
             country = query_result.get('outputContexts')[0].get('parameters').get('geo-country')
 
-            self.logger.debug('===== EXPLORE SESS DATA {0}'.format(sess_data))
             if sess_data['country'] == 'NULL':
                 self.hwdb.hwdb_user_session_upsert(chat_id, country, 'NULL', 'NULL', 'NULL', 'I')
             else:
@@ -592,18 +535,35 @@ class TBOT:
                 num_kids = query_result.get('outputContexts')[3].get('parameters').get('kids')
                 country_of_origin = query_result.get('outputContexts')[3].get('parameters').get('country_of_origin')
 
-                self.hwdocs.hwd_pick_a_template(country, 'Telegram', chat_id)
-                
+                payload = {}
+                payload['Chat_ID'] = chat_id
+                payload['Experiences'] = sess_data['category']
+                payload['Country'] = sess_data['country']
+                payload['TravelDate'] = travel_date
+                payload['NumDays'] = num_days
+                payload['NumAdults'] = num_adults
+                payload['NumKids'] = num_kids
+                payload['CountryOfOrigin'] = country_of_origin
+
+                msg = 'Generating your itinerary ...'
+                self.updater.bot.send_message(chat_id=payload['Chat_ID'], text=msg, parse_mode=telegram.ParseMode.MARKDOWN)
+
+                doc_id = self.hwdocs.hwd_pick_a_template(sess_data['country'], 'Telegram', chat_id)
+                sugg, itinerary_data, err = self.hwbase.hwb_destination_itinerary_data(payload)
+                self.logger.debug('Itinerary Data {0}'.format(json.dumps(itinerary_data, indent=4)))
+
+                self.tbot_populate_itinerary_data(doc_id, payload, itinerary_data)
 
                 for cat in sess_data['category']:
                     self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', cat, 'NULL', 'D')
 
+
             else:
-                self.logger.debug('SELECTED Country : {0}'.format(sess_data['country']))
                 supported_cat = self.hwbase.hwb_all_experiences_for_a_country(sess_data['country'])
                 category = payload.get('callback_query').get('data')
-                if len(list(set(sess_data['category']) & set([category]))) == 0:
-                    self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'NULL', category, 'NULL', 'I')
+                self.logger.debug('SELECTED Country : {0} Rx Category {1} Existing Cats {2}'.format(sess_data['country'], category, sess_data['category']))
+                if len(set(sess_data['category']) & set([category])) == 0:
+                    self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'NULL', category, sess_data['continent'], 'I')
                 else:
                     self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, 'NULL', 'D')
 
@@ -706,18 +666,119 @@ class TBOT:
         chat_id = payload.get('chat').get('id')
         continent = query_result.get('parameters').get('continents_of_world')
 
+        if continent.lower() == 'europe':
+            continent_text = '_There simply is no way to tour Europe and not be awestruck by its natural beauty, epic history and dazzling artistic and culinary diversity._'
+        elif continent.lower() == 'asia':
+            continent_text = '_From the nomadic steppes of Kazakhstan to the frenetic streets of Hanoi, Asia is a continent so full of intrigue, adventure, solace and spirituality that it has fixated and confounded travellers for centuries._'
+        else:
+            continent_text = ''
+
         reply_markup = self.tbot_main_menu(continent)
-        self.updater.bot.send_message(chat_id=chat_id, text='How would you like to explore ' + continent.upper() + ' *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+        self.updater.bot.send_message(chat_id=chat_id, text='\n\n' + continent_text + '\n\nHow would you like to explore ' + continent.upper() + ', *by country* or *by experience*.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
 
-    def send_data_to_populate_itinerary(self, chat_id, experiences, country, travel_date, num_days, num_adults, num_kids, country_of_origin):
+    def tbot_populate_itinerary_data(self, doc_id, payload, data):
         """
         Populate the data that needs to be updated in the itinerary and send the batch update. 
         """
+
         request = []
-        request.append(self.hwdocs.hwd_insert_replace_txt('country', country))
-        request.append(self.hwdocs.hwd_insert_replace_txt())
+        #
+        # 1. Insert all the text 
+        #  
+
+
+        # Find the write index
+        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'Things To Do')
+
+        section_description = 'Based on experiences you liked, I have listed things to do in {{country}}.\n'
+        req, idx = self.hwdocs.hwd_insert_text(wr_idx, section_description)
+        request.append(req)
+        wr_idx += idx 
+        prev_idx = 0
+
+        prev_exp_str = ''
+        prev_dest_str = ''
+        for rec in data:
+
+            curr_exp = ', '.join(rec['Experiences'])
+            if curr_exp != prev_exp_str:
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\nFor ')
+                request.append(req)
+                wr_idx += idx
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, curr_exp + ' :\n')
+                request.append(req)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, True, False)
+                request.append(req)
+                prev_exp_str = curr_exp
+                wr_idx += idx
+
+            if rec['Destination'] != prev_dest_str:
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + rec['Destination'].upper() + '\n\n')
+                request.append(req)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, True)
+                request.append(req)
+                prev_dest_str = rec['Destination']
+                wr_idx += idx
+
+
+            bullet_title = rec['TopSights'] + '\n'
+            req, idx = self.hwdocs.hwd_insert_bullet_item(wr_idx, bullet_title)
+            request.append(req)
+            req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False)
+            request.append(req)
+            wr_idx += idx
+
+            if rec['Description']:
+                description = '\t' + rec['Description'] + '\n'
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, description)
+                request.append(req)
+                wr_idx += idx
+
+            if rec['Type']:
+                dest_type = '\t' + 'Destination Type : ' + str(rec['Type']) + '\n'
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, dest_type)
+                request.append(req)
+                wr_idx += idx
+
+            if rec['TypicalTimeSpent']:
+                typical_time_spent = '\t' + 'Typical Time Spent By Travellers : ' + str(rec['TypicalTimeSpent']) + ' mins.\n'
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, typical_time_spent)
+                request.append(req)
+                wr_idx += idx
+
+            if rec['Kid-friendly']:
+                kids_frendly = '\t' + "Kid's Friendly : " + str(rec['Kid-friendly']) + '\n'
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, kids_frendly)
+                request.append(req)
+                wr_idx += idx
+
+            linebreak = '\t\n'
+            req, idx = self.hwdocs.hwd_insert_text(wr_idx, linebreak)
+            request.append(req)
+            wr_idx += idx
+
+
+        self.hwdocs.hwd_batch_update(doc_id, request)
+
+        #
+        # 2. Replace the text with the required values. 
+        #
+        request = []
+        request.append(self.hwdocs.hwd_replace_text('country', payload['Country']))
+        request.append(self.hwdocs.hwd_replace_text('when_to_visit', self.hwbase.hwb_country_info_by_field(payload['Country'], 'WhenToVisit')))
+        request.append(self.hwdocs.hwd_replace_text('native_currency', self.hwbase.hwb_country_info_by_field(payload['Country'], 'Currency')))
+        request.append(self.hwdocs.hwd_replace_text('native_language', self.hwbase.hwb_country_info_by_field(payload['Country'], 'Languages')))
+        request.append(self.hwdocs.hwd_replace_text('power_plug', self.hwbase.hwb_country_info_by_field(payload['Country'], 'PlugSocketVoltage')))
+
+        self.hwdocs.hwd_batch_update(doc_id, request)
+
+        msg = payload['Country'].upper() + ' itinearary is created. ' + 'https://docs.google.com/document/d/' + doc_id
+        self.logger.info('user-id {0} {1}'.format(payload['Chat_ID'], msg))
+
+        msg = 'Congratulations! Your ' + payload['Country'].upper() + ' itinearary is created. Have a safe trip!\nhttps://docs.google.com/document/d/' + doc_id 
+        self.updater.bot.send_message(chat_id=payload['Chat_ID'], text=msg, disable_web_page_preview=False)
 
 
 
@@ -731,25 +792,12 @@ class TBOT:
 
         experiences = query_result.get('outputContexts')[3].get('parameters').get('experiences')
         country = query_result.get('outputContexts')[3].get('parameters').get('for_country')
-        travel_date = query_result.get('outputContexts')[3].get('parameters').get('date')
-        num_days = query_result.get('outputContexts')[3].get('parameters').get('num_days')
-        num_adults = query_result.get('outputContexts')[3].get('parameters').get('adults')
-        num_kids = query_result.get('outputContexts')[3].get('parameters').get('kids')
-        country_of_origin = query_result.get('outputContexts')[3].get('parameters').get('country_of_origin')
 
-        self.logger.debug('------- experiences {0} {1}'.format(experiences, country))
+        for cat in experiences:
+            self.hwdb.hwdb_user_session_upsert(chat_id, country, 'NULL', cat, self.hwbase.hwb_get_continent_for_countries(country), 'I')
 
-        if country:
-            self.hwdocs.hwd_pick_a_template(country, 'Telegram', chat_id)
-            pass
-
-        else: 
-            for cat in experiences:
-                self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', cat, 'NULL', 'I')
-
-            reply_markup = self.tbot_create_itinerary_country_experiences_menu(sess_data['country'], experiences)
-            self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nWould you like to add more expereinces to your *' + sess_data['country'].upper() + '* itinerary\n\n', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
-
+        reply_markup = self.tbot_create_itinerary_country_experiences_menu(country, experiences)
+        self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nWould you like to add more expereinces to your *' + country.upper() + '* itinerary\n\n', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
 

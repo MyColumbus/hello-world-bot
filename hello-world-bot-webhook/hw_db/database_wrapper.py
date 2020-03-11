@@ -112,7 +112,7 @@ class HWDB:
 
                 self.hwdb_cur.execute("CALL UpsertSession(%s, %s, %s, %s, %s, %s)", (uid, country, destination, cat, continent, op))
                 self.hwdb_conn.commit()
-                logger.info('Successfully performed operation {0} in user session id {1}'.format(op, uid))
+                logger.info('Successfully performed operation {0} in user session id {1} : continent={2} country={3} destinations={4} experiences={5}'.format(op, uid, continent, country, destination, cat))
             else:
                 self.hwdb_conn_open()
         except psycopg2.Error as e:

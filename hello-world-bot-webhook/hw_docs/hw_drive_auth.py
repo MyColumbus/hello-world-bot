@@ -11,11 +11,14 @@ import os.path
 import sys
 import random
 import json
+import logging
+
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 
 
+logger = logging.getLogger()
 
 class HWDocs:
     def __init__(self):
@@ -53,27 +56,38 @@ class HWDocs:
         self.docs_service = build('docs', 'v1', credentials=self.creds, cache_discovery=False)
 
 
-
     def hwd_pick_a_template(self, country, platform, uid):
         """
         There are list of templates that a itinerary can be created from.
         The pick from list is random, to give users none bot expereince.
         """
 
+        logger.debug('Country {0}'.format(country))
         copy_title = country + '_' + platform + '_' + str(uid)
         body = {
-            'name': copy_title
+            'name': copy_title,
+            'description': 'GlobeTrot generated travel itinerary.',
         }
         drive_response = self.drive_service.files().copy(
             fileId=random.choice(self.itinerary_templates), body=body).execute()
         document_copy_id = drive_response.get('id')
         print('Dup copy ID : {0}'.format(document_copy_id))
 
+        # File permissions
+        user_permission = {
+            'type': 'anyone',
+            'role': 'reader',
+        }
+        self.drive_service.permissions().create(
+                fileId=document_copy_id,
+                body=user_permission,
+                fields='id').execute()
+
         return document_copy_id
 
 
 
-    def hwd_replace_txt(self, key, value):
+    def hwd_replace_text(self, key, value):
         """
         Replace text request structure. 
         """
@@ -87,6 +101,61 @@ class HWDocs:
 
         return req
 
+
+    def hwd_insert_text(self, idx, text):
+         """
+         Insert raw text without formating.
+         """
+         req = {'insertText': {
+                 'location': {
+                     'index': idx,
+                 },
+                 'text': text
+             }}
+
+         return req, len(text)
+
+
+    def hwd_format_text(self, starti, endi, is_bold, is_italic, is_underline):
+        """
+        Format the text as following: 
+        - Bold
+        - Italic
+        """
+        req = {'updateTextStyle': {
+                'range': {
+                    'startIndex': starti,
+                    'endIndex': endi
+                },
+                'textStyle': {
+                    'bold': is_bold,
+                    'italic': is_italic,
+                    'underline': is_underline
+                },
+                'fields': 'bold, italic'
+            }}
+
+        return req
+
+
+    def hwd_insert_bullet_item(self, idx, title):
+
+         req = {
+             'insertText': {
+                 'location': {
+                     'index': idx,
+                 },
+                 'text': title
+             }},{
+                 'createParagraphBullets': {
+                  'range': {
+                      'startIndex': idx,
+                      'endIndex':  idx + len(title)
+                  },
+                  'bulletPreset': 'BULLET_DIAMONDX_ARROW3D_SQUARE',
+              }}
+
+         return req, len(title)
 
 
     def hwd_insert_hyperlink(self, start_idx, end_idx, url):
@@ -110,7 +179,6 @@ class HWDocs:
         }}
 
 
-
     def hwd_get_text_range_idx(self, doc_id, match_text):
 
         # Do a document "get" request and print the results as formatted JSON
@@ -127,24 +195,11 @@ class HWDocs:
                 elements = para.get('elements')
                 for e in elements:
                     content = e.get('textRun').get('content')
-                    if content == match_text:
+                    if match_text in content:
                         startIdx = e.get('startIndex')
                         endIdx = e.get('endIndex')
 
         return startIdx, endIdx
-
-
-    def hwd_populate_data(self, doc_id, itinerary_data):
-        """
-        Here populate data for itinerary.
-        """
-        requests = []
-        # 1. Title
-        requests.append(self.hwd_replace_txt('country', 'India'))
-
-        # Update document.
-        self.hwd_batch_update(doc_id, requests)
-
 
 
     def hwd_batch_update(self, doc_id, requests):
