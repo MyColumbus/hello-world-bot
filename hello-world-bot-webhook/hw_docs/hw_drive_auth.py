@@ -66,7 +66,7 @@ class HWDocs:
         copy_title = country + '_' + platform + '_' + str(uid)
         body = {
             'name': copy_title,
-            'description': 'GlobeTrot generated travel itinerary.',
+            'description': 'Columbus generated travel itinerary.',
         }
         drive_response = self.drive_service.files().copy(
             fileId=random.choice(self.itinerary_templates), body=body).execute()

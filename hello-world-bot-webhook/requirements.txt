@@ -5,4 +5,5 @@ pytz==2018.9
 uwsgi==2.0.18
 flask==1.1.1
 flask_restful==0.3.7
+fuzzywuzzy==0.18.0
 
