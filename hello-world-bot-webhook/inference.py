@@ -19,7 +19,7 @@ HWLogs(logging.DEBUG)
 logger = logging.getLogger()
 
 
-HW_DEBUG = 0
+HW_DEBUG = 1
 BATCH_SZ = 1
 
 if HW_DEBUG:
@@ -32,7 +32,6 @@ if HW_DEBUG:
 # Globals
 #
 BATCH_SIZE = 3
-IMAGE_HOSTING_URL = 'http://127.0.0.1/dest-images/'
 
 
 class HWBase:
@@ -92,6 +91,7 @@ class HWBase:
         Drops 'zero' value columns of pandas dataframe.
         """
         return dataframe.loc[:, dataframe.apply(pd.Series.nunique) != 0]
+
 
 
     def hwb_split_and_pick_right(self, list, position):
@@ -254,6 +254,7 @@ class HWBase:
         # Convert 'NaN' to empty string
         df_tsights['Description'] = df_tsights.Description.fillna('')
         df_tsights['Type'] = df_tsights.Type.fillna('')
+        df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.fillna('')
 
         # FIXME: what should be the typical default time to set? for now its 30 mins.
         #df_tsights['TypicalTimeSpent'] = df_tsights.TypicalTimeSpent.fillna(df_tsights.TypicalTimeSpent.mean())
@@ -296,10 +297,6 @@ class HWBase:
 
         logger.debug('Destination DF shape {0}'.format(df_dest.shape))
         logger.debug('TopSights DF Shape {0}'.format(df_tsights.shape))
-
-        if HW_DEBUG:
-            display(df_dest.head())
-            display(DataFrameSummary(df_dest).summary())
 
         return df_dest, df_tsights
 
@@ -443,7 +440,7 @@ class HWBase:
             return ''
 
 
-    def hwb_experience_combinations(self, continent, experience, exp_len):
+    def hwb_continent_experience_combinations(self, continent, experience, exp_len):
         """
         When user experiences are not found in the dataset, in that case we can suggest possible combinations for a given
         list of experiences as suggestion to
@@ -467,6 +464,69 @@ class HWBase:
                     top3.append(top[i])
 
         return top3
+
+
+    def hwb_country_experience_combinations(self, continent, country, experience, exp_len):
+        """
+        When user experiences are not found in the dataset, in that case we can suggest possible combinations for a given
+        list of experiences as suggestion to
+        """
+        top = []
+        top3 = []
+
+        for elen in range(exp_len, -1, -1):
+            comb = combinations(experience, elen)
+            elist = []
+            elist = list(comb)
+            for i in range(len(elist)):
+                top.append(elist[i])
+
+        df_var = eval('self.df_dest_' + continent.lower())
+        df_cnt = df_var[df_var['Country'] == country]
+        for i in range(len(top)):
+            if len(top[i]) and (len(top3) < 3):
+                c_list = list(set(self.hwb_all_experiences_for_a_country(country)) - set(list(top[i])))
+                df_tmp = df_cnt[(df_cnt[c_list] == False).all(axis=1) & (df_cnt[list(top[i])] == True).all(axis=1)]
+                if not df_tmp.empty:
+                    top3.append(top[i])
+
+        return top3
+
+
+    def hwd_map_dest_to_tsights_experineces(self, cat, subcat):
+        """
+        Mapping main experiences with the options(expereinces) on TopSights.
+        """
+        if cat == 'adventures':
+          if set(subcat) & set(['Skiing']):
+            return ['Skiing']
+          else:
+            return ['Amusement Parks']
+        elif cat == 'outdoors':
+          return ['Outdoors']
+        elif cat == 'social':
+          if (set(subcat) & set(['Shopping'])) and (set(subcat) & set(['Casinos'])):
+            return ['Markets', 'Casinos']
+          elif set(subcat) & set(['Shopping']):
+            return ['Markets']
+          elif set(subcat) & set(['Casinos']):
+            return ['Casinos']
+        elif cat == 'beautiful_nature':
+          if set(subcat) & set(['Beaches']):
+            return ['Beaches']
+        elif cat == 'arts_culture':
+          if (set(subcat) & set(['Museums'])) and (set(subcat) & set(['Architecture'])) and (set(subcat) & set(['Art'])) and (set(subcat) & set(['Casinos'])):
+            return ['Museums', 'Architecture','Art','Casinos']
+          elif set(subcat) & set(['Museums']):
+            return ['Museums']
+          elif set(subcat) & set(['Architecture']):
+            return ['History']
+          elif set(subcat) & set(['Art']):
+            return ['Art & Culture']
+          elif set(subcat) & set(['Casinos']):
+            return ['Casinos']
+        else:
+          return []
 
 
     def hwb_find_top_countries_for_experiences(self, continent, experiences):
@@ -495,12 +555,10 @@ class HWBase:
             if len(subcat):
                 c_list = list(set(self.hwb_all_experiences(continent)) - set(subcat))
                 df_local = df_dest_var[(df_dest_var[c_list] == False).all(axis=1) & (df_dest_var[subcat] == True).all(axis=1)]
-                if HW_DEBUG:
-                    display(df_local.head())
 
                 if df_local.empty:
                     sugg = {}
-                    top_sugg = self.hwb_experience_combinations(continent, subcat, len(subcat))
+                    top_sugg = self.hwb_continent_experience_combinations(continent, subcat, len(subcat))
                     sugg['Suggestion'] = top_sugg
                     ret_suggestions.append(sugg)
                     logger.info('Top expereinces suggestions to user {0}'.format(top_sugg[0]))
@@ -515,6 +573,14 @@ class HWBase:
 
                     # Find top places
                     df_local = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
+                    if df_local.empty:
+                        logger.debug('TopSights are missing for this destination, which is unusual')
+                        continue
+
+                    ts_list = self.hwd_map_dest_to_tsights_experineces(cat, subcat)
+                    if ts_list:
+                        df_local = df_local[(df_local[ts_list] == True).any(axis=1)]
+
                     df_local = df_local.sort_values(['Rating'], ascending=False)
                     df_local = df_local.sort_values(['NumberOfReview'], ascending=False)
                     df_local = df_local[:BATCH_SZ*20]
@@ -562,12 +628,12 @@ class HWBase:
 
         for cat,subcat in subexp_list.items():
             if len(subcat):
-                c_list = list(set(self.hwb_all_experiences(continent)) - set(subcat))
+                c_list = list(set(self.hwb_all_experiences_for_a_country(country)) - set(subcat))
                 df_local = df_local_country[(df_local_country[c_list] == False).all(axis=1) & (df_local_country[subcat] == True).all(axis=1)]
 
                 if df_local.empty:
                     sugg = {}
-                    top_sugg = self.hwb_experience_combinations(continent, subcat, len(subcat))
+                    top_sugg = self.hwb_country_experience_combinations(continent, country, subcat, len(subcat))
                     sugg['Suggestion'] = top_sugg
                     ret_suggestions.append(sugg)
                     logger.info('Top expereinces suggestions to user {0}'.format(list(top_sugg[0])))
@@ -581,18 +647,30 @@ class HWBase:
                     top_destionations = df_local.Destination.unique().tolist()
                     
                     # Find top places
-                    df_local = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
-                    if df_local.empty:
+                    df_ts = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
+                    if df_ts.empty:
                         logger.debug('TopSights are missing for this destination, which is unusual')
                         continue
 
-                    df_local = df_local.sort_values(['Rating'], ascending=False)
-                    df_local = df_local.sort_values(['NumberOfReview'], ascending=False)
-                    df_local = df_local[:BATCH_SZ*3]
+                    ts_list = self.hwd_map_dest_to_tsights_experineces(cat, subcat)
+                    if ts_list:
+                        df_ts = df_ts[(df_ts[ts_list] == True).any(axis=1)]
 
-                    dest_list = df_local.Destination.unique().tolist()
-                    logger.debug('Destination list : {0}'.format(dest_list))
+                    df_ts = df_ts.sort_values(['Rating'], ascending=False)
+                    df_ts = df_ts.sort_values(['NumberOfReview'], ascending=False)
+                    
+                    logger.debug('DUMP {0}'.format(df_ts))
+                    dest_list = df_ts.Destination.unique().tolist()
+
                     payload['Experiences'] = subcat
+                    for dst in dest_list: 
+                        df = df_ts[df_ts['Destination'] == dst]
+                        df = df[:3]
+                        payload['Destinations'] = df[:(BATCH_SZ * 3)]
+
+
+
+                    logger.debug('Destination list : {0}'.format(dest_list))
                     payload['Destinations'] = dest_list[:(BATCH_SZ * 3)]
                     ret_data.append(payload)
 
@@ -614,23 +692,25 @@ class HWBase:
         experiences = payload['Experiences']
         continent = self.hwb_get_continent_for_countries(country)
 
+        subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
+
         # Destination.csv has all the possible combination of the filters. Hence always match 'all'.
         # When 'all' is not matched in that case 'any' will be the suggestions to user.
         logger.debug('Continent {0} Country {1} experience {2}'.format(continent, country, experiences))
         df_dest_var = eval('self.df_dest_' + continent.lower())
         df_tsights_var = eval('self.df_tsights_' + continent.lower())
-        subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         df_a_destination = df_dest_var[(df_dest_var['Country'] == country) & (df_dest_var['Destination'] == destination)]
 
         for cat,subcat in subexp_list.items():
             if len(subcat):
-                c_list = list(set(self.hwb_all_experiences(continent)) - set(subcat))
+                dest_exp_list, _ = self.hwb_all_experiences_for_a_destination(destination)
+                c_list = list(set(dest_exp_list) - set(subcat))
                 df_local = df_a_destination[(df_a_destination[c_list] == False).all(axis=1) & (df_a_destination[subcat] == True).all(axis=1)]
 
                 if df_local.empty:
                     sugg = {}
-                    top_sugg = self.hwb_experience_combinations(continent, subcat, len(subcat))
+                    top_sugg = self.hwb_a_destination_experience_combinations(continent, subcat, len(subcat))
                     sugg['Suggestion'] = top_sugg
                     ret_suggestions.append(sugg)
                     logger.info('Top expereinces suggestions to user {0}'.format(list(top_sugg[0])))
@@ -642,19 +722,23 @@ class HWBase:
                     top_destionations = df_local.Destination.unique().tolist()
                     
                     # Find top places
-                    df_local = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
-                    if df_local.empty:
+                    df_ts = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
+                    if df_ts.empty:
                         logger.debug('TopSights are missing for this destination, which is unusual')
                         continue
 
-                    df_local = df_local.sort_values(['Rating'], ascending=False)
-                    df_local = df_local.sort_values(['NumberOfReview'], ascending=False)
+                    ts_list = self.hwd_map_dest_to_tsights_experineces(cat, subcat)
+                    if ts_list:
+                        df_ts = df_ts[(df_ts[ts_list] == True).any(axis=1)]
 
-                    dest_list = df_local.Destination.unique().tolist()[:2]
+                    df_ts = df_ts.sort_values(['Rating'], ascending=False)
+                    df_ts = df_ts.sort_values(['NumberOfReview'], ascending=False)
+
+                    dest_list = df_ts.Destination.unique().tolist()[:2]
 
                     # Populate the data.
                     for dst in dest_list:
-                        df_dst = df_local[df_local['Destination'] == dst]
+                        df_dst = df_ts[df_ts['Destination'] == dst]
                         df_dst = df_dst[:3]
                         
                         for index, row in df_dst.iterrows():
@@ -664,9 +748,8 @@ class HWBase:
                             ts_data['TopSights'] = row['TopSight']
                             ts_data['Description'] = row['Description']
                             ts_data['Type'] = row['Type']
-                            if row['TypicalTimeSpent']:
-                                ts_data['TypicalTimeSpent'] = row['TypicalTimeSpent']
-                            ts_data['Kid-friendly'] = row['Kid-friendly']
+                            ts_data['TypicalTimeSpent'] = row['TypicalTimeSpent']
+                            ts_data['Kid-friendly'] = 'Yes' if row['Kid-friendly'] else ''
                             ret_data.append(ts_data)
 
         return ret_suggestions, ret_data, err
@@ -685,24 +768,24 @@ class HWBase:
         experiences = payload['Experiences']
         continent = self.hwb_get_continent_for_countries(country)
 
+        subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         # Destination.csv has all the possible combination of the filters. Hence always match 'all'.
         # When 'all' is not matched in that case 'any' will be the suggestions to user.
         logger.debug('Continent {0} Country {1} experience {2}'.format(continent, country, experiences))
         df_dest_var = eval('self.df_dest_' + continent.lower())
         df_tsights_var = eval('self.df_tsights_' + continent.lower())
-        subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         df_local_country = df_dest_var[df_dest_var['Country'] == country]
 
         for cat,subcat in subexp_list.items():
             if len(subcat):
-                c_list = list(set(self.hwb_all_experiences(continent)) - set(subcat))
+                c_list = list(set(self.hwb_all_experiences_for_a_country(country)) - set(subcat))
                 df_local = df_local_country[(df_local_country[c_list] == False).all(axis=1) & (df_local_country[subcat] == True).all(axis=1)]
 
                 if df_local.empty:
                     sugg = {}
-                    top_sugg = self.hwb_experience_combinations(continent, subcat, len(subcat))
+                    top_sugg = self.hwb_country_experience_combinations(continent, country, subcat, len(subcat))
                     sugg['Suggestion'] = top_sugg
                     ret_suggestions.append(sugg)
                     logger.info('Top expereinces suggestions to user {0}'.format(list(top_sugg[0])))
@@ -714,19 +797,23 @@ class HWBase:
                     top_destionations = df_local.Destination.unique().tolist()
                     
                     # Find top places
-                    df_local = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
-                    if df_local.empty:
+                    df_ts = df_tsights_var[df_tsights_var['Destination'].isin(top_destionations)]
+                    if df_ts.empty:
                         logger.debug('TopSights are missing for this destination, which is unusual')
                         continue
 
-                    df_local = df_local.sort_values(['Rating'], ascending=False)
-                    df_local = df_local.sort_values(['NumberOfReview'], ascending=False)
+                    ts_list = self.hwd_map_dest_to_tsights_experineces(cat, subcat)
+                    if ts_list:
+                        df_ts = df_ts[(df_ts[ts_list] == True).any(axis=1)]
 
-                    dest_list = df_local.Destination.unique().tolist()[:2]
+                    df_ts = df_ts.sort_values(['Rating'], ascending=False)
+                    df_ts = df_ts.sort_values(['NumberOfReview'], ascending=False)
+
+                    dest_list = df_ts.Destination.unique().tolist()[:2]
 
                     # Populate the data.
                     for dst in dest_list:
-                        df_dst = df_local[df_local['Destination'] == dst]
+                        df_dst = df_ts[df_ts['Destination'] == dst]
                         df_dst = df_dst[:3]
                         
                         for index, row in df_dst.iterrows():
@@ -736,37 +823,10 @@ class HWBase:
                             ts_data['TopSights'] = row['TopSight']
                             ts_data['Description'] = row['Description']
                             ts_data['Type'] = row['Type']
-                            if row['TypicalTimeSpent']:
-                                ts_data['TypicalTimeSpent'] = row['TypicalTimeSpent']
-                            ts_data['Kid-friendly'] = row['Kid-friendly']
+                            ts_data['TypicalTimeSpent'] = row['TypicalTimeSpent']
+                            ts_data['Kid-friendly'] = 'Yes' if row['Kid-friendly'] else ''
                             ret_data.append(ts_data)
 
         return ret_suggestions, ret_data, err
-
-
-
-#hwbase = HWBase()
-#exp = ['Nature', 'Beaches', 'Desert', 'Yoga']
-#top_s, data, err = hwbase.hwb_find_top_countries_for_experiences(exp)
-#logger.debug('Data {0}'.format(data))
-#logger.debug('Suggestions {0}'.format(top_s))
-#logger.debug('========================')
-#top_s, data, err = hwbase.hwb_find_destination_for_experiences(data[0]['Countries'][0], data[0]['Experiences'])
-#logger.debug('Destionation_for_exp {0}'.format(data))
-
-
-#if __name__ == '__main__':
-#
-#    # Error serveiry
-#     HWLogs(40)
-
-#     hwbase = HWBase()
-#     exp = ['Nature', 'Beaches', 'Desert', 'Yoga']
-#     top_s, data, err = hwbase.hwb_find_top_countries_for_experiences(exp)
-#     print('Data {0}'.format(data))
-#     print('Suggestions {0}'.format(top_s))
-#     print('========================')
-#     top_s, data, err = hwbase.hwb_find_destination_for_experiences(data[0]['Countries'][0], data[0]['Experiences'])
-#     print('Destionation_for_exp {0}'.format(data))
 
 

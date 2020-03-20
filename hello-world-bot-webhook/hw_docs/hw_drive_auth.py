@@ -25,7 +25,7 @@ class HWDocs:
         # If modifying these scopes, delete the file token.pickle.
         self.DRIVE_SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
         self.creds = None
-        self.itinerary_templates = ['14L4Ib36Rn0Ielc3yM2m2PWHGG467ty4fU_TpN7IF8UQ']
+        self.itinerary_templates = ['1fMfGG-MlwQz1uafKV2j85DbjOZC9TN0pzBZR-dXOK0Q']
         self.drive_service = None
         self.docs_service = None
 
@@ -210,12 +210,4 @@ class HWDocs:
          result = self.docs_service.documents().batchUpdate(
              documentId=doc_id, body={'requests': requests}).execute()
 
-
-#docs = HWDocs()
-#doc_id = docs.hwd_pick_a_template('France', 'Telegram', 1234)
-#doc_id = '1KmPa9AQjUYddgoBL8d0CfJ6hfrrQm5AwuRzLljOGEhI'
-#docs.hwd_populate_data(doc_id)
-#s, e = docs.hwd_get_text_range_idx(doc_id, 'Check live prices')
-#print('startIdx {0} endIdx {1}'.format(s, e))
-#docs.hwd_insert_hyperlink(doc_id, s, e, 'https://thehelloworld.xyz')
 

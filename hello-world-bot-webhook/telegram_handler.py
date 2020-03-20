@@ -281,11 +281,15 @@ class TBOT:
 
         if err != 200:
             sug_str = ''
-            self.logger.debug('Suggestions are {0}'.format(sugg))
-            sugg_list = sugg[0]['Suggestion']
-            for i in range(len(sugg_list)):
-                sug_str += '\n' + ', '.join(sugg_list[i]) + ''
-            sugg_text = '\n\n Not all combinations of expereinces are available at one location, my suggestions would be:\n' + sug_str 
+            for i in range(len(sugg)):
+                for key, value in sugg[i].items():
+                    for idx in range(len(value)):
+                        if idx == 0:
+                            sug_str += '\n' + ', '.join(value[idx])
+                        else:
+                            sug_str += ' | ' + ', '.join(value[idx])
+
+            sugg_text = '\n\nRequested combinations of expereiences are not available in any country, my suggestions would be to try :\n' + sug_str 
             self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
@@ -324,11 +328,15 @@ class TBOT:
 
         if err != 200:
             sug_str = ''
-            self.logger.debug('Suggestions are {0}'.format(sugg))
-            sugg_list = sugg[0]['Suggestion']
-            for i in range(len(sugg_list)):
-                sug_str += '\n' + ', '.join(sugg_list[i]) + ''
-            sugg_text = '\n\n Not all combinations of expereinces are available at one location, my suggestions would be:\n' + sug_str 
+            for i in range(len(sugg)):
+                for key, value in sugg[i].items():
+                    for idx in range(len(value)):
+                        if idx == 0:
+                            sug_str += '\n' + ', '.join(value[idx])
+                        else:
+                            sug_str += ' | ' + ', '.join(value[idx])
+
+            sugg_text = '\n\nRequested combinations of expereiences are not available in any country, my suggestions would be to try :\n' + sug_str 
             self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
@@ -352,32 +360,16 @@ class TBOT:
     # FIXME : This should be converted to callback and should have itinerary in bucketlist. 
     # Bucket list operations.
     ##
-    def tbot_bucketlist_processing(self, query_result, payload):
+    def tbot_trips_processing(self, query_result, payload):
         categories = []
 
         chat_id = payload.get('callback_query').get('from').get('id')
         country = query_result.get('parameters').get('geo-country')
-        destination = query_result.get('parameters').get('geo-city')
-        categories = query_result.get('parameters').get('experiences')
-        operation = query_result.get('parameters').get('bucketlist_ops')
+        operation = query_result.get('parameters').get('trips_ops')
 
-
-        if operation == 'Add':
-            self.logger.debug('Add to bucket list userID {0} country {1} destination {2} cat{3}'.format(chat_id, country, destination, categories))
-            if not categories:
-                self.hwdb.hwdb_bucketlist_insert(chat_id, country, destination, 'NULL', 'NULL')
-            else:
-                for cat in categories:
-                    self.hwdb.hwdb_bucketlist_insert(chat_id, country, destination, cat, 'NULL')
-            self.updater.bot.sendMessage(chat_id=chat_id, text='Added to your bucket list.')
-
-        elif operation == 'Delete':
-            self.hwdb.hwdb_columbus_user_bucketlist_delete(chat_id, country, destination)
-            self.logger.debug('Item deleted from user {0} bucketlist, country {1} destination {2}'.format(chat_id, country, destination))
-            self.updater.bot.sendMessage(chat_id=chat_id, text='Deleted ' + country + ', ' + destination + ' from bucket list.')
-
-        elif operation == 'Show':
-            #FIXME : All Categories are not shown and display it in better way.
+        if operation == 'Show':
+            self.updater.bot.send_message(chat_id=chat_id, text='Coming soon', parse_mode=telegram.ParseMode.MARKDOWN)
+            """
             result = self.hwdb.hwdb_bucketlist_select(chat_id)
             self.logger.debug(json.dumps(result, indent=4))
 
@@ -419,7 +411,7 @@ class TBOT:
                                 text=bucketlist_rsp, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
                         prev_country = country
                         prev_destination = destination
-
+            """
 
         else:
             self.logger.error('Bucket list operation is not permitted : {0} for user ID {1}'.format(operation, chat_id))
@@ -546,14 +538,12 @@ class TBOT:
                 if len(sess_data['category']) == 0:
                     self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nPlease select atleast one experience', parse_mode=telegram.ParseMode.MARKDOWN)
                     return 'ok'
-                #self.tbot_explore_a_country(chat_id, sess_data['country'], sess_data['category'], False)
                 experiences = query_result.get('outputContexts')[3].get('parameters').get('experiences')
                 country = query_result.get('outputContexts')[3].get('parameters').get('for_country')
                 travel_date = query_result.get('outputContexts')[3].get('parameters').get('date')
                 num_days = query_result.get('outputContexts')[3].get('parameters').get('num_days')
                 num_adults = query_result.get('outputContexts')[3].get('parameters').get('adults')
                 num_kids = query_result.get('outputContexts')[3].get('parameters').get('kids')
-                country_of_origin = query_result.get('outputContexts')[3].get('parameters').get('country_of_origin')
 
                 payload = {}
                 payload['Chat_ID'] = chat_id
@@ -563,7 +553,6 @@ class TBOT:
                 payload['NumDays'] = num_days
                 payload['NumAdults'] = num_adults
                 payload['NumKids'] = num_kids
-                payload['CountryOfOrigin'] = country_of_origin
 
                 msg = 'Generating your itinerary ...'
                 self.updater.bot.send_message(chat_id=payload['Chat_ID'], text=msg, parse_mode=telegram.ParseMode.MARKDOWN)
@@ -614,7 +603,6 @@ class TBOT:
                 payload['NumDays'] = 4
                 payload['NumAdults'] = 2
                 payload['NumKids'] = 1
-                payload['CountryOfOrigin'] = ''
                 sugg, itinerary_data, err = self.hwbase.hwb_a_destination_itinerary_data(payload)
                 self.logger.debug('Itinerary Data {0}'.format(json.dumps(itinerary_data, indent=4)))
 
@@ -647,7 +635,7 @@ class TBOT:
     #############################
     callbackIntents = {
             'input.pick_continent': tbot_cb_pick_continents,
-            'input.bucket_list_ops': tbot_bucketlist_processing,
+            'input.my_trips': tbot_trips_processing,
             'input.pick_by_option': tbot_cb_by_options,
             'input.telegram_by_country_name': tbot_cb_by_options,
             'input.find_places': tbot_cb_find_places,
@@ -669,7 +657,7 @@ class TBOT:
         if ((query_result.get('action') == 'input.pick_by_option') or
             (query_result.get('action') == 'input.pick_continent') or
             (query_result.get('action') == 'input.telegram_by_country_name') or
-            (query_result.get('action') == 'input.bucket_list_ops') or
+            (query_result.get('action') == 'input.my_trips') or
             (query_result.get('action') == 'find_places.find_places-followup') or
             (query_result.get('action') == 'input.find_places') or
             (query_result.get('action') == 'input.when_to_visit') or
@@ -691,7 +679,7 @@ class TBOT:
             (query_result.get('action') == 'input.find_places') or
             (query_result.get('action') == 'settings.country-name') or
             (query_result.get('action') == 'input.pick_continent') or
-            (query_result.get('action') == 'create_itinerary.ci_travel_date.ci_people.ci_country')):
+            (query_result.get('action') == 'create_itinerary.ci_travel_date.ci_people')):
 
             self.logger.debug('Intent without callback : {0}'.format(query_result.get('action')))
             self.tbot_call_normal_intents_methods(query_result, payload)
@@ -903,7 +891,7 @@ class TBOT:
             'input.cb_welcome' : tbot_start_command,
             'settings.country-name' : tbot_user_settings,
             'input.pick_continent' : tbot_continent_menu,
-            'create_itinerary.ci_travel_date.ci_people.ci_country': tbot_create_itinerary_exp_menu,
+            'create_itinerary.ci_travel_date.ci_people': tbot_create_itinerary_exp_menu,
     }
 
 
