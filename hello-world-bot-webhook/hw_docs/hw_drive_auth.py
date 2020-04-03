@@ -5,13 +5,13 @@
 # Proprietary and confidential
 # Written by Milind Deore <tomdeore@gmail.com>, May 2019
 
-from __future__ import print_function
 import pickle
 import os.path
 import sys
 import random
 import json
 import logging
+import textwrap
 
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -28,6 +28,8 @@ class HWDocs:
         self.itinerary_templates = ['1fMfGG-MlwQz1uafKV2j85DbjOZC9TN0pzBZR-dXOK0Q']
         self.drive_service = None
         self.docs_service = None
+
+        self.TRIP_PLAN_TTD = ['<10', '>20', '>36']
 
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
@@ -91,13 +93,13 @@ class HWDocs:
         """
         Replace text request structure. 
         """
-        req = {'replaceAllText': {
+        req = [{'replaceAllText': {
                      'containsText': {
                          'text': '{{' + key + '}}',
                          'matchCase':  'true'
                      },
                      'replaceText': value,
-                 }}
+                 }}]
 
         return req
 
@@ -106,12 +108,12 @@ class HWDocs:
          """
          Insert raw text without formating.
          """
-         req = {'insertText': {
+         req = [{'insertText': {
                  'location': {
                      'index': idx,
                  },
                  'text': text
-             }}
+             }}]
 
          return req, len(text)
 
@@ -122,7 +124,7 @@ class HWDocs:
         - Bold
         - Italic
         """
-        req = {'updateTextStyle': {
+        req = [{'updateTextStyle': {
                 'range': {
                     'startIndex': starti,
                     'endIndex': endi
@@ -133,14 +135,193 @@ class HWDocs:
                     'underline': is_underline
                 },
                 'fields': 'bold, italic'
-            }}
+            }}]
 
         return req
 
 
+    def hwd_format_text_style(self, si, ei, font, fsz, fg, fweight=400):
+        """
+        Text formating for following:
+            Font, Font Size, Font Color.
+        """
+        h = fg.lstrip('#')
+        RGB = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+        request = [{
+                'updateTextStyle': {
+                    'range': {
+                        'startIndex': si,
+                        'endIndex': ei
+                    },
+                    'textStyle': {
+                        'weightedFontFamily': {
+                            'fontFamily': font,
+                            'weight': fweight
+                        },
+                        'fontSize': {
+                            'magnitude': fsz,
+                            'unit': 'PT'
+                        },
+                        'foregroundColor': {
+                            'color': {
+                                'rgbColor': {
+                                    'red': float(RGB[0])/255.0,
+                                    'green': float(RGB[1])/255.0,
+                                    'blue': float(RGB[2])/255.0,
+                                }
+                            }
+                        }
+                    },
+                    'fields': 'foregroundColor,weightedFontFamily,fontSize'
+                }
+            }]
+
+        return request
+
+
+    def hwd_create_table_at_index(self, r, c, idx):
+        request = [{
+              'insertTable': {
+                  'rows': r,
+                  'columns': c,
+                  'location': {
+                    'segmentId':'',
+                    'index': idx
+                  }
+              },
+          }
+          ]
+
+        return request
+
+
+    def hwd_modify_table_columns_property(self, t_idx):
+        request = [{
+                'updateTableColumnProperties': {
+                  'tableStartLocation': {'index': t_idx},
+                  'columnIndices': [0],
+                  'tableColumnProperties': {
+                    'widthType': 'FIXED_WIDTH',
+                    'width': {
+                      'magnitude': 100,
+                      'unit': 'PT'
+                    }
+                  },
+                  'fields': '*'
+                }
+            }
+            ]
+
+        return request
+
+
+    def hwd_modify_table_cell_style(self, r, c, t_idx, fg):
+        """
+        Convert table border to white colour so that it become invisible. 
+        In future we can add more functionality. 
+        """
+
+        h = fg.lstrip('#')
+        RGB = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+        request = [{
+                'updateTableCellStyle': {
+                  'tableCellStyle': {
+                      'rowSpan': r,
+                      'columnSpan': c,
+                      'borderLeft': {
+                          'color': {
+                              'color': {
+                                  'rgbColor': {
+                                      'red': float(RGB[0])/255.0,
+                                      'green': float(RGB[1])/255.0,
+                                      'blue': float(RGB[2])/255.0
+                                      }
+                                  }
+                              },
+                          'width': {
+                              'unit': 'PT'
+                              },
+                          'dashStyle': 'SOLID'
+                          },
+                      'borderRight': {
+                          'color': {
+                              'color': {
+                                  'rgbColor': {
+                                      'red': float(RGB[0])/255.0,
+                                      'green': float(RGB[1])/255.0,
+                                      'blue': float(RGB[2])/255.0
+                                      }
+                                  }
+                              },
+                          'width': {
+                              'unit': 'PT'
+                              },
+                          'dashStyle': 'SOLID'
+                          },
+                      'borderTop': {
+                          'color': {
+                              'color': {
+                                  'rgbColor': {
+                                      'red': float(RGB[0])/255.0,
+                                      'green': float(RGB[1])/255.0,
+                                      'blue': float(RGB[2])/255.0
+                                      }
+                                  }
+                              },
+                          'width': {
+                              'unit': 'PT'
+                              },
+                          'dashStyle': 'SOLID'
+                          },
+                      'borderBottom': {
+                          'color': {
+                              'color': {
+                                  'rgbColor': {
+                                      'red': float(RGB[0])/255.0,
+                                      'green': float(RGB[1])/255.0,
+                                      'blue': float(RGB[2])/255.0
+                                      }
+                                  }
+                              },
+                          'width': {
+                              'unit': 'PT'
+                              },
+                          'dashStyle': 'SOLID'
+                          }
+                      },
+                  'fields': '*',
+                  'tableStartLocation': {
+                      "segmentId": '',
+                      'index': t_idx
+                      }
+                }
+            }
+            ]
+
+        return request
+
+
+    def print_fixed_len_string(self, *argv):
+        pstr = ''
+        flen = 0
+        fixed_len = eval('self.' + argv[0])
+        if len(argv[1:]) != len(fixed_len):
+            return 'Incorrect arguments'
+
+        for arg in argv[1:]:
+            tstr = '{0: ' + (lambda x : fixed_len[x])(flen) + '}'
+            pstr += tstr.format(arg)
+            flen += 1
+        ss = textwrap.fill(pstr, subsequent_indent=' ' * 30)
+
+        return ss
+
+
     def hwd_insert_bullet_item(self, idx, title):
 
-         req = {
+         req = [{
              'insertText': {
                  'location': {
                      'index': idx,
@@ -153,7 +334,7 @@ class HWDocs:
                       'endIndex':  idx + len(title)
                   },
                   'bulletPreset': 'BULLET_DIAMONDX_ARROW3D_SQUARE',
-              }}
+              }}]
 
          return req, len(title)
 
@@ -164,7 +345,7 @@ class HWDocs:
         document body.
         """
 
-        return {
+        return [{
            "updateTextStyle": {
             "textStyle": {
              "link": {
@@ -176,7 +357,7 @@ class HWDocs:
              "endIndex": end_idx
             },
             "fields": "link"
-        }}
+        }}]
 
 
     def hwd_get_text_range_idx(self, doc_id, match_text):
@@ -210,4 +391,10 @@ class HWDocs:
          result = self.docs_service.documents().batchUpdate(
              documentId=doc_id, body={'requests': requests}).execute()
 
+
+    def get_json(self, doc_id):
+
+         # Do a document "get" request and print the results as formatted JSON
+         result = self.docs_service.documents().get(documentId=doc_id).execute()
+         print('RX Data {0}'.format(json.dumps(result, indent=4)))
 

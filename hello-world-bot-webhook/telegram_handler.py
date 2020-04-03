@@ -158,8 +158,8 @@ class TBOT:
         button_list = [
                 InlineKeyboardButton('By Countries', callback_data='TELEGRAM_BY_COUNTRY ' + continent),
                 InlineKeyboardButton('By Experience', callback_data='TELEGRAM_BY_EXPERIENCE ' + continent),
-                InlineKeyboardButton('A Destination In Mind', callback_data='TELEGRAM_BY_DESTINATION ' + continent),
-                InlineKeyboardButton('My Trips', callback_data='Show My Trips')
+                InlineKeyboardButton('Bucketlist Destination', callback_data='TELEGRAM_BY_DESTINATION ' + continent),
+                InlineKeyboardButton('Saved Trips', callback_data='Show My Trips')
             ]
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
         return reply_markup
@@ -274,7 +274,9 @@ class TBOT:
                 country_url = ''
 
             text_rsp = '\n\n[' + country.upper() + '](' + country_url + ') ' + self.tbot_flag(self.hwbase.hwb_country_info_by_field(country, 'CountryCode')) + '\n'
-            text_rsp += '( _' + ' | '.join(rec['Destinations']) + '_ )'
+            dest_list_str = ' | '.join(rec['Destinations'])
+            dest_list_str = dest_list_str.replace(':', ', ')
+            text_rsp += '( _' + dest_list_str + '_ )'
             textToSend += text_rsp
             reply_markup = self.tbot_create_itinerary_menu(country, rec['Experiences'])
             self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
@@ -285,9 +287,9 @@ class TBOT:
                 for key, value in sugg[i].items():
                     for idx in range(len(value)):
                         if idx == 0:
-                            sug_str += '\n' + ', '.join(value[idx])
+                            sug_str += '\n*' + ', '.join(value[idx]) +  '*'
                         else:
-                            sug_str += ' | ' + ', '.join(value[idx])
+                            sug_str += ' OR *' + ', '.join(value[idx]) + '*'
 
             sugg_text = '\n\nRequested combinations of expereiences are not available in any country, my suggestions would be to try :\n' + sug_str 
             self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
@@ -320,7 +322,9 @@ class TBOT:
             text_rsp = ''
             exp_str = ', '.join(rec['Experiences'])
             textToSend += '\n\nFor *' + exp_str.upper() + '* preferred destinations are:\n'
-            text_rsp = '( _' + ' | '.join(rec['Destinations']) + '_ )'
+            dest_list_str = ' | '.join(rec['Destinations'])
+            dest_list_str = dest_list_str.replace(':', ', ')
+            text_rsp = '( _' + dest_list_str + '_ )'
             textToSend += text_rsp
             reply_markup = self.tbot_create_itinerary_menu(country, rec['Experiences'])
             self.updater.bot.sendMessage(chat_id=chat_id, text=textToSend, reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN, disable_web_page_preview=False)
@@ -332,11 +336,11 @@ class TBOT:
                 for key, value in sugg[i].items():
                     for idx in range(len(value)):
                         if idx == 0:
-                            sug_str += '\n' + ', '.join(value[idx])
+                            sug_str += '\n*' + ', '.join(value[idx]) + '*'
                         else:
-                            sug_str += ' | ' + ', '.join(value[idx])
+                            sug_str += ' OR *' + ', '.join(value[idx]) + '*'
 
-            sugg_text = '\n\nRequested combinations of expereiences are not available in any country, my suggestions would be to try :\n' + sug_str 
+            sugg_text = '\n\nRequested combinations of expereiences are not available in a specific destination, my suggestions would be to try :\n' + sug_str 
             self.updater.bot.sendMessage(chat_id=chat_id, text=sugg_text, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
@@ -439,9 +443,9 @@ class TBOT:
         elif 'TELEGRAM_BY_DESTINATION' in payload.get('callback_query').get('data'):
             self.hwdb.hwdb_user_session_delete(chat_id)
             sess_data = self.hwdb.hwdb_user_session_select(chat_id)
-            self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'TELEGRAM_BY_DESTINATION', sess_data['category'], sess_data['continent'], 'I')
+            self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'TELEGRAM_BY_DESTINATION', sess_data['category'], continent, 'I')
             self.updater.bot.send_message(chat_id=chat_id,
-                    text='\n\nPlease text me the *Destination* you have in mind?', parse_mode=telegram.ParseMode.MARKDOWN)
+                    text='\n\nText me your bucketlist *Destination* in ' + continent.upper() + '?', parse_mode=telegram.ParseMode.MARKDOWN)
 
 
         elif 'bycountry_' in payload.get('callback_query').get('data'):
@@ -538,18 +542,20 @@ class TBOT:
                 if len(sess_data['category']) == 0:
                     self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nPlease select atleast one experience', parse_mode=telegram.ParseMode.MARKDOWN)
                     return 'ok'
-                experiences = query_result.get('outputContexts')[3].get('parameters').get('experiences')
-                country = query_result.get('outputContexts')[3].get('parameters').get('for_country')
-                travel_date = query_result.get('outputContexts')[3].get('parameters').get('date')
-                num_days = query_result.get('outputContexts')[3].get('parameters').get('num_days')
-                num_adults = query_result.get('outputContexts')[3].get('parameters').get('adults')
-                num_kids = query_result.get('outputContexts')[3].get('parameters').get('kids')
+
+                out_context = {}
+                for out_context in query_result.get('outputContexts'):
+                    if 'ci_travel_date-followup' in out_context.get('name'):
+                        break
+
+                num_days = out_context.get('parameters').get('num_days')
+                num_adults = out_context.get('parameters').get('adults')
+                num_kids = out_context.get('parameters').get('kids')
 
                 payload = {}
                 payload['Chat_ID'] = chat_id
                 payload['Experiences'] = sess_data['category']
                 payload['Country'] = sess_data['country']
-                payload['TravelDate'] = travel_date
                 payload['NumDays'] = num_days
                 payload['NumAdults'] = num_adults
                 payload['NumKids'] = num_kids
@@ -619,7 +625,7 @@ class TBOT:
                     self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, 'NULL', 'D')
 
                 rec = self.hwdb.hwdb_user_session_select(chat_id)
-                supported_cat, _ = self.hwbase.hwb_all_experiences_for_a_destination(sess_data['destination'])
+                supported_cat, _ = self.hwbase.hwb_all_experiences_for_a_destination(sess_data['continent'], sess_data['destination'])
                 reply_markup = self.tbot_update_experience_menu(supported_cat, rec['category'])
                 self.updater.bot.edit_message_reply_markup(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'),
                         reply_markup=reply_markup)
@@ -739,76 +745,136 @@ class TBOT:
         #  
 
 
-        # Find the write index
-        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'Things To Do')
+        # Find table dimensions.
+        prev_exp_dest = ''
+        count = 0
+        elements_counts = []
+        for idx in range(len(data)):
+            exp_dest_str = ''.join(data[idx]['Experiences']) + data[idx]['Destination']
 
-        section_description = 'Based on experiences you liked, I have listed things to do in {{country}}.\n'
+            if prev_exp_dest != exp_dest_str:
+                prev_exp_dest = exp_dest_str
+                if count:
+                    elements_counts.append(count)
+                count = 1
+            else:
+                count += 1
+        elements_counts.append(count)
+        self.logger.debug('Table Dimensions : {0}'.format(elements_counts))
+
+
+        # Find the write index
+        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'TRIP PLAN')
+
+        section_description = '(Make changes to the plan based on your convenience.)'
         req, idx = self.hwdocs.hwd_insert_text(wr_idx, section_description)
+        request.append(req)
+        req = self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#d01556', 100)
+        request.append(req)
+        req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, True, False)
         request.append(req)
         wr_idx += idx 
         prev_idx = 0
+        element = -1
 
         prev_exp_str = ''
-        prev_dest_str = ''
+        prev_exp_and_dest_str = ''
         for rec in data:
 
             curr_exp = ', '.join(rec['Experiences'])
             if curr_exp != prev_exp_str:
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\nFor ')
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\nExperiences - ')
+                request.append(req)
+                req = self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 100)
+                request.append(req)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False)
                 request.append(req)
                 wr_idx += idx
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, curr_exp + ' :\n')
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, curr_exp)
                 request.append(req)
                 req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, True, False)
                 request.append(req)
                 prev_exp_str = curr_exp
                 wr_idx += idx
 
-            if rec['Destination'] != prev_dest_str:
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + rec['Destination'].upper() + '\n\n')
+            if curr_exp + rec['Destination'] != prev_exp_and_dest_str:
+                prev_exp_and_dest_str = curr_exp + rec['Destination']
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + rec['Destination'].replace(':', ', '))
                 request.append(req)
-                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, True)
+                req = self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 12, '#3c91f4', 400)
+                request.append(req)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False)
                 request.append(req)
                 prev_dest_str = rec['Destination']
                 wr_idx += idx
 
+                if rec['TopSights']:
+                    element += 1
+                    # Add one extra row for header.
+                    request.append(self.hwdocs.hwd_create_table_at_index(elements_counts[element] + 1, 2, wr_idx))
+                    wr_idx += 1  # This is required
+                    request.append(self.hwdocs.hwd_modify_table_columns_property(wr_idx))
+                    request.append(self.hwdocs.hwd_modify_table_cell_style(elements_counts[element], 2, wr_idx, '#ffffff'))
+                    wr_idx += 3
+                    req, idx = self.hwdocs.hwd_insert_text(wr_idx, 'Date & Time')
+                    request.append(req)
+                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 300))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False))
+                    wr_idx += (idx + 2) 
 
-            bullet_title = rec['TopSights'] + '\n'
-            req, idx = self.hwdocs.hwd_insert_bullet_item(wr_idx, bullet_title)
-            request.append(req)
-            req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False)
-            request.append(req)
-            wr_idx += idx
+                    req, idx = self.hwdocs.hwd_insert_text(wr_idx, 'Things To Do')
+                    request.append(req)
+                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 300))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False))
+                    wr_idx += (idx + 2 + 1) 
+                    
 
-            if rec['Description']:
-                description = '\t' + rec['Description'] + '\n'
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, description)
+            self.hwdocs.hwd_batch_update(doc_id, request)
+            self.logger.debug(self.hwdocs.get_json(doc_id))
+
+            request = []
+            if elements_counts[element]:
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '____________')
                 request.append(req)
-                wr_idx += idx
+                request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#efefef', 400))
+                request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False))
+                wr_idx += (idx + 2)
 
-            if rec['Type']:
-                dest_type = '\t' + 'Destination Type : ' + str(rec['Type']) + '\n'
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, dest_type)
-                request.append(req)
-                wr_idx += idx
+                sub_str = ''
+                if rec['Type']:
+                    sub_str += rec['Type']
 
-            if rec['TypicalTimeSpent']:
-                typical_time_spent = '\t' + 'Typical Time Spent By Travellers : ' + str(rec['TypicalTimeSpent']) + ' mins.\n'
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, typical_time_spent)
-                request.append(req)
-                wr_idx += idx
+                if rec['TypicalTimeSpent']:
+                    travel_str = str(rec['TypicalTimeSpent']) + ' mins. typically spent by people'
+                    sub_str += travel_str if not len(sub_str) else ', ' + travel_str
 
-            if rec['Kid-friendly']:
-                kids_frendly = '\t' + "Kid's Friendly : " + str(rec['Kid-friendly']) + '\n'
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, kids_frendly)
-                request.append(req)
-                wr_idx += idx
+                if rec['Kid-friendly']:
+                    kids_str = 'Kids friendly'
+                    sub_str += kids_str if not len(sub_str) else ', ' + kids_str
 
-            linebreak = '\t\n'
-            req, idx = self.hwdocs.hwd_insert_text(wr_idx, linebreak)
-            request.append(req)
-            wr_idx += idx
+                if rec['Amusement-Parks']:
+                    a_park = 'Amusement park'
+                    sub_str += a_park if not len(sub_str) else ', ' + a_park
+              
+                if len(sub_str):
+                    req, idx = self.hwdocs.hwd_insert_text(wr_idx, rec['TopSights'] + '\n' + sub_str)
+                    request.append(req)
+                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + len(rec['TopSights']), 'Source Code Pro', 11, '#333333', 400))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + len(rec['TopSights']), True, False, False))
 
+                    request.append(self.hwdocs.hwd_format_text_style(wr_idx + len(rec['TopSights'] + '\n'), wr_idx + idx, 'Source Code Pro', 10, '#333333', 100))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx + len(rec['TopSights'] + '\n'), wr_idx + idx, False, False, False))
+                else:
+                    req, idx = self.hwdocs.hwd_insert_text(wr_idx, rec['TopSights'])
+                    request.append(req)
+                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 400))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False))
+
+                wr_idx += idx + 2 + 1
+
+
+        req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n')
+        request.append(req)
 
         self.hwdocs.hwd_batch_update(doc_id, request)
 
@@ -859,12 +925,15 @@ class TBOT:
         sess_data = self.hwdb.hwdb_user_session_select(chat_id)
 
         msg = payload.get('text')
-        if sess_data['destination'] == 'TELEGRAM_BY_DESTINATION':
-            matched_destinations = self.tbot_fuzz_extract(msg, self.hwbase.hwb_all_destinations())
+        if msg == '/Start':
+            self.tbot_start_command(query_result, payload)
+
+        elif sess_data['destination'] == 'TELEGRAM_BY_DESTINATION':
+            matched_destinations = self.tbot_fuzz_extract(msg, self.hwbase.hwb_all_destinations_per_continent(sess_data['continent']))
             if msg.lower() != matched_destinations.lower():
                 self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nShowing destination : *' + matched_destinations + '*\n', parse_mode=telegram.ParseMode.MARKDOWN)
 
-            supported_cat, country = self.hwbase.hwb_all_experiences_for_a_destination(matched_destinations)
+            supported_cat, country = self.hwbase.hwb_all_experiences_for_a_destination(sess_data['continent'], matched_destinations)
             continent = self.hwbase.hwb_get_continent_for_countries(country)
             self.logger.debug('Categories for country/destination {0}/{1} are {2}'.format(matched_destinations, country, supported_cat))
 
