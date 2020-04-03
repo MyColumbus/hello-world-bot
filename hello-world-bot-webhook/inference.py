@@ -725,12 +725,16 @@ class HWBase:
 
                     ts_list = self.hwd_map_dest_to_tsights_experineces(cat, subcat)
                     if ts_list:
-                        df_ts = df_ts[(df_ts[ts_list] == True).any(axis=1)]
+                        df_tss = df_ts[(df_ts[ts_list] == True).any(axis=1)]
+                        if not df_tss.empty:
+                            print('NOT GOOD : Nothing to show in TopSights')
+                            df_ts = df_tss
 
                     df_ts = df_ts.sort_values(['Rating'], ascending=False)
                     df_ts = df_ts.sort_values(['NumberOfReview'], ascending=False)
 
                     dest_list = df_ts.Destination.unique().tolist()[:2]
+                    logger.debug('Top Destinations : {0}'.format(dest_list))
 
                     # Populate the data.
                     for dst in dest_list:
@@ -798,6 +802,7 @@ class HWBase:
                     df_local = df_local[df_local['Rank'] == 1]
                     df_local = df_local.sort_values(['Rank'], ascending=True)
                     top_destionations = df_local.Destination.unique().tolist()
+                    logger.debug('Top Destinations from df_local: {0}'.format(top_destionations))
                     
                     # Find top places
                     df_ts = df_tsights_var[df_tsights_var['Country'] == country]
@@ -808,12 +813,17 @@ class HWBase:
 
                     ts_list = self.hwd_map_dest_to_tsights_experineces(cat, subcat)
                     if ts_list:
-                        df_ts = df_ts[(df_ts[ts_list] == True).any(axis=1)]
+                        df_tss = df_ts[(df_ts[ts_list] == True).any(axis=1)]
+                        if not df_tss.empty:
+                            print('NOT GOOD : Nothing to show in TopSights')
+                            df_ts = df_tss
+
 
                     df_ts = df_ts.sort_values(['Rating'], ascending=False)
                     df_ts = df_ts.sort_values(['NumberOfReview'], ascending=False)
 
                     dest_list = df_ts.Destination.unique().tolist()[:2]
+                    logger.debug('Top Destinations : {0}'.format(dest_list))
 
                     # Populate the data.
                     for dst in dest_list:
