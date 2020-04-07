@@ -773,6 +773,8 @@ class HWBase:
         num_adults = payload['NumAdults']
         num_kids = payload['NumKids']
 
+        num_days = 15 if num_days > 15 else num_days
+
         subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         # Destination.csv has all the possible combination of the filters. Hence always match 'all'.
@@ -782,6 +784,10 @@ class HWBase:
         df_tsights_var = eval('self.df_tsights_' + continent.lower())
 
         df_local_country = df_dest_var[df_dest_var['Country'] == country]
+
+        num_exp = len(subexp_list)
+        days_per_exp = int(num_days/num_exp) + 1
+        logger.debug('Days per destination : {0}'.format(days_per_exp))
 
         for cat,subcat in subexp_list.items():
             if len(subcat):
@@ -828,7 +834,7 @@ class HWBase:
                     # Populate the data.
                     for dst in dest_list:
                         df_dst = df_ts[df_ts['Destination'] == dst]
-                        df_dst = df_dst[:(3 * num_days)]
+                        df_dst = df_dst[:days_per_exp]
                         
                         for index, row in df_dst.iterrows():
                             ts_data = {}

@@ -118,66 +118,62 @@ class HWDocs:
          return req, len(text)
 
 
-    def hwd_format_text(self, starti, endi, is_bold, is_italic, is_underline):
+    def hwd_format_text(self, si, ei, is_bold, is_italic, is_underline, font, fsz, fweight=400, fg='000000', bg='#ffffff'):
         """
         Format the text as following: 
         - Bold
         - Italic
+        - underline
+        - BackgroundColor
+        - ForegroundColor
+        - Font, Font Size, Font Weight
         """
+        b = bg.lstrip('#')
+        B_RGB = tuple(int(b[i:i+2], 16) for i in (0, 2, 4))
+        f = fg.lstrip('#')
+        F_RGB = tuple(int(f[i:i+2], 16) for i in (0, 2, 4))
+
         req = [{'updateTextStyle': {
                 'range': {
-                    'startIndex': starti,
-                    'endIndex': endi
+                    'startIndex': si,
+                    'endIndex': ei
                 },
                 'textStyle': {
                     'bold': is_bold,
                     'italic': is_italic,
-                    'underline': is_underline
-                },
-                'fields': 'bold, italic'
-            }}]
-
-        return req
-
-
-    def hwd_format_text_style(self, si, ei, font, fsz, fg, fweight=400):
-        """
-        Text formating for following:
-            Font, Font Size, Font Color.
-        """
-        h = fg.lstrip('#')
-        RGB = tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
-
-        request = [{
-                'updateTextStyle': {
-                    'range': {
-                        'startIndex': si,
-                        'endIndex': ei
-                    },
-                    'textStyle': {
-                        'weightedFontFamily': {
-                            'fontFamily': font,
-                            'weight': fweight
-                        },
-                        'fontSize': {
-                            'magnitude': fsz,
-                            'unit': 'PT'
-                        },
-                        'foregroundColor': {
-                            'color': {
-                                'rgbColor': {
-                                    'red': float(RGB[0])/255.0,
-                                    'green': float(RGB[1])/255.0,
-                                    'blue': float(RGB[2])/255.0,
-                                }
+                    'underline': is_underline,
+                    'backgroundColor': {
+                        'color': {
+                            'rgbColor': {
+                                'red': float(B_RGB[0])/255.0,
+                                'green': float(B_RGB[1])/255.0,
+                                'blue': float(B_RGB[2])/255.0,
                             }
                         }
                     },
-                    'fields': 'foregroundColor,weightedFontFamily,fontSize'
-                }
-            }]
+                    'foregroundColor': {
+                        'color': {
+                            'rgbColor': {
+                                'red': float(F_RGB[0])/255.0,
+                                'green': float(F_RGB[1])/255.0,
+                                'blue': float(F_RGB[2])/255.0,
+                            }
+                        }
+                    },
+                    'weightedFontFamily': {
+                        'fontFamily': font,
+                        'weight': fweight
+                    },
+                    'fontSize': {
+                        'magnitude': fsz,
+                        'unit': 'PT'
+                    },
 
-        return request
+                },
+                'fields': 'bold, italic, underline, backgroundColor, foregroundColor, weightedFontFamily, fontSize'
+            }}]
+
+        return req
 
 
     def hwd_create_table_at_index(self, r, c, idx):
@@ -209,6 +205,34 @@ class HWDocs:
                     }
                   },
                   'fields': '*'
+                }
+            }
+            ]
+
+        return request
+
+
+    def hwd_update_paragraph_style(self, si, ei, mag):
+        """
+        Convert table border to white colour so that it become invisible. 
+        In future we can add more functionality. 
+        """
+
+        request = [{
+                'updateParagraphStyle': {
+                    'paragraphStyle': {
+                        'borderLeft': {
+                            'padding': {
+                                'magnitude': mag,
+                                'unit': 'PT'
+                            }
+                        }
+                    },
+                    'fields': 'borderLeft',
+                    'range': {
+                          'startIndex': si,
+                          'endIndex':  ei
+                    }
                 }
             }
             ]

@@ -545,7 +545,7 @@ class TBOT:
 
                 out_context = {}
                 for out_context in query_result.get('outputContexts'):
-                    if 'ci_travel_date-followup' in out_context.get('name'):
+                    if out_context.get('parameters').get('num_days'):
                         break
 
                 num_days = out_context.get('parameters').get('num_days')
@@ -769,9 +769,7 @@ class TBOT:
         section_description = '(Make changes to the plan based on your convenience.)'
         req, idx = self.hwdocs.hwd_insert_text(wr_idx, section_description)
         request.append(req)
-        req = self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#d01556', 100)
-        request.append(req)
-        req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, True, False)
+        req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, True, False, 'Roboto Mono', 10, 400, '#434343')
         request.append(req)
         wr_idx += idx 
         prev_idx = 0
@@ -783,17 +781,11 @@ class TBOT:
 
             curr_exp = ', '.join(rec['Experiences'])
             if curr_exp != prev_exp_str:
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\nExperiences - ')
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + ':  ' + curr_exp + '  :')
                 request.append(req)
-                req = self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 100)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Arial', 11, 400, '#ffffff', '#3c91f4')
                 request.append(req)
-                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False)
-                request.append(req)
-                wr_idx += idx
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, curr_exp)
-                request.append(req)
-                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, True, False)
-                request.append(req)
+                #request.append(self.hwdocs.hwd_update_paragraph_style(wr_idx, wr_idx + idx, 18))
                 prev_exp_str = curr_exp
                 wr_idx += idx
 
@@ -801,9 +793,7 @@ class TBOT:
                 prev_exp_and_dest_str = curr_exp + rec['Destination']
                 req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + rec['Destination'].replace(':', ', '))
                 request.append(req)
-                req = self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 12, '#3c91f4', 400)
-                request.append(req)
-                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False, 'Roboto', 18, 400, '#3c91f4')
                 request.append(req)
                 prev_dest_str = rec['Destination']
                 wr_idx += idx
@@ -818,26 +808,22 @@ class TBOT:
                     wr_idx += 3
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, 'Date & Time')
                     request.append(req)
-                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 300))
-                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 11, 500, '#999999'))
                     wr_idx += (idx + 2) 
 
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, 'Things To Do')
                     request.append(req)
-                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 300))
-                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 11, 500, '#999999'))
                     wr_idx += (idx + 2 + 1) 
                     
 
             self.hwdocs.hwd_batch_update(doc_id, request)
-            self.logger.debug(self.hwdocs.get_json(doc_id))
 
             request = []
             if elements_counts[element]:
                 req, idx = self.hwdocs.hwd_insert_text(wr_idx, '____________')
                 request.append(req)
-                request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#efefef', 400))
-                request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False))
+                request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto Mono', 10, 400, '#999999'))
                 wr_idx += (idx + 2)
 
                 sub_str = ''
@@ -859,24 +845,23 @@ class TBOT:
                 if len(sub_str):
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, rec['TopSights'] + '\n' + sub_str)
                     request.append(req)
-                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + len(rec['TopSights']), 'Source Code Pro', 11, '#333333', 400))
-                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + len(rec['TopSights']), True, False, False))
-
-                    request.append(self.hwdocs.hwd_format_text_style(wr_idx + len(rec['TopSights'] + '\n'), wr_idx + idx, 'Source Code Pro', 10, '#333333', 100))
-                    request.append(self.hwdocs.hwd_format_text(wr_idx + len(rec['TopSights'] + '\n'), wr_idx + idx, False, False, False))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + len(rec['TopSights']), True, False, False, 'Roboto', 12, 700))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx + len(rec['TopSights'] + '\n'), wr_idx + idx, False, False, False, 'Roboto Mono', 10, 300, '#434343'))
                 else:
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, rec['TopSights'])
                     request.append(req)
-                    request.append(self.hwdocs.hwd_format_text_style(wr_idx, wr_idx + idx, 'Source Code Pro', 11, '#333333', 400))
-                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False, 'Roboto', 12, 700))
 
                 wr_idx += idx + 2 + 1
-
-
-        req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n')
-        request.append(req)
+            
+            else:
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n\n')
+                request.append(req)
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto Mono', 10, 400, '#434343')
+                request.append(req)
 
         self.hwdocs.hwd_batch_update(doc_id, request)
+        self.logger.debug(self.hwdocs.get_json(doc_id))
 
         #
         # 2. Replace the text with the required values. 
@@ -906,8 +891,11 @@ class TBOT:
         chat_id = payload.get('chat').get('id')
         sess_data = self.hwdb.hwdb_user_session_select(chat_id)
 
-        experiences = query_result.get('outputContexts')[3].get('parameters').get('experiences')
-        country = query_result.get('outputContexts')[3].get('parameters').get('for_country')
+        experiences = query_result.get('outputContexts')[2].get('parameters').get('experiences')
+        country = query_result.get('outputContexts')[2].get('parameters').get('for_country')
+
+        for cat in sess_data['category']:
+            self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', cat, 'NULL', 'D')
 
         for cat in experiences:
             self.hwdb.hwdb_user_session_upsert(chat_id, country, 'NULL', cat, self.hwbase.hwb_get_continent_for_countries(country), 'I')
@@ -1000,4 +988,3 @@ class TBOT:
             self.tbot_process_telegram_intents(query_result, payload)
 
 
-        return 'ok'
