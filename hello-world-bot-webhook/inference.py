@@ -834,7 +834,7 @@ class HWBase:
                     # Populate the data.
                     for dst in dest_list:
                         df_dst = df_ts[df_ts['Destination'] == dst]
-                        df_dst = df_dst[:days_per_exp]
+                        df_dst = df_dst[:3]
                         
                         for index, row in df_dst.iterrows():
                             ts_data = {}
@@ -846,6 +846,11 @@ class HWBase:
                             ts_data['TypicalTimeSpent'] = row['TypicalTimeSpent']
                             ts_data['Kid-friendly'] = 'Yes' if row['Kid-friendly'] else ''
                             ts_data['Amusement-Parks'] = 'Yes' if row['Amusement Parks'] else ''
+                            
+                            if row['Latitude'] and row['Longitude']:
+                                ts_data['Latitude'] = row['Latitude']
+                                ts_data['Longitude'] = row['Longitude']
+
                             ret_data.append(ts_data)
 
         return ret_suggestions, ret_data, err

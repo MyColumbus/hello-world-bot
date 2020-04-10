@@ -8,6 +8,9 @@
 import json
 import random
 import logging
+import datetime
+import math
+from suntime import Sun, SunTimeException
 from flask import request
 from inference import HWBase
 from hw_db.database_wrapper import HWDB
@@ -22,6 +25,7 @@ from telegram import InlineKeyboardButton,InlineKeyboardMarkup,KeyboardButton,Re
 
 class TBOT:
     __tbot_token = '907125689:AAHZ__kBMDydgVL9jc8B4qUS37Dp-mcrQXM'
+    #__tbot_token = '1TL14O6C5hEZOfK19lnnJsLpvH0Xgl3ACQLaUd_cce-0' ## Ivan's new design
     __flag_offset = 127462 - ord('A')
 
     def __init__(self):
@@ -741,9 +745,8 @@ class TBOT:
 
         request = []
         #
-        # 1. Insert all the text 
+        # 1. Insert text 
         #  
-
 
         # Find table dimensions.
         prev_exp_dest = ''
@@ -764,7 +767,7 @@ class TBOT:
 
 
         # Find the write index
-        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'TRIP PLAN')
+        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'Trip Plan')
 
         section_description = '(Make changes to the plan based on your convenience.)'
         req, idx = self.hwdocs.hwd_insert_text(wr_idx, section_description)
@@ -842,6 +845,13 @@ class TBOT:
                     a_park = 'Amusement park'
                     sub_str += a_park if not len(sub_str) else ', ' + a_park
               
+                if (not math.isnan(rec['Latitude']))  and (not math.isnan(rec['Longitude'])):
+                    sun = Sun(rec['Latitude'], rec['Longitude'])
+                    sr = sun.get_sunrise_time()
+                    ss = sun.get_sunset_time()
+                    sr_ss = 'Sun raise at {} and gets down at {} UTC'.format(sr.strftime('%H:%M'), ss.strftime('%H:%M'))
+                    sub_str += sr_ss if not len(sr_ss) else ', ' + sr_ss
+
                 if len(sub_str):
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, rec['TopSights'] + '\n' + sub_str)
                     request.append(req)

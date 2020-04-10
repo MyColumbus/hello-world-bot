@@ -21,15 +21,15 @@ from google.auth.transport.requests import Request
 logger = logging.getLogger()
 
 class HWDocs:
+    __itinerary_templates = ['1fMfGG-MlwQz1uafKV2j85DbjOZC9TN0pzBZR-dXOK0Q']
+    __drive_scopes = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
+
     def __init__(self):
         # If modifying these scopes, delete the file token.pickle.
-        self.DRIVE_SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
         self.creds = None
-        self.itinerary_templates = ['1fMfGG-MlwQz1uafKV2j85DbjOZC9TN0pzBZR-dXOK0Q']
         self.drive_service = None
         self.docs_service = None
 
-        self.TRIP_PLAN_TTD = ['<10', '>20', '>36']
 
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
@@ -43,7 +43,7 @@ class HWDocs:
                 self.creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    'hw_docs/credentials.json', self.DRIVE_SCOPES)
+                    'hw_docs/credentials.json', self.__drive_scopes)
                 self.creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
             with open('hw_docs/token.pickle', 'wb') as token:
@@ -71,7 +71,7 @@ class HWDocs:
             'description': 'Columbus generated travel itinerary.',
         }
         drive_response = self.drive_service.files().copy(
-            fileId=random.choice(self.itinerary_templates), body=body).execute()
+            fileId=random.choice(self.__itinerary_templates), body=body).execute()
         document_copy_id = drive_response.get('id')
         print('Dup copy ID : {0}'.format(document_copy_id))
 
@@ -186,58 +186,52 @@ class HWDocs:
                     'index': idx
                   }
               },
-          }
-          ]
+          }]
 
         return request
 
 
-    def hwd_modify_table_columns_property(self, t_idx):
+    def hwd_modify_table_columns_property(self, loc, idx, mag):
         request = [{
                 'updateTableColumnProperties': {
-                  'tableStartLocation': {'index': t_idx},
-                  'columnIndices': [0],
+                  'tableStartLocation': {'index': loc},
+                  'columnIndices': [idx],
                   'tableColumnProperties': {
                     'widthType': 'FIXED_WIDTH',
                     'width': {
-                      'magnitude': 100,
+                      'magnitude': mag,
                       'unit': 'PT'
                     }
                   },
                   'fields': '*'
                 }
-            }
-            ]
+            }]
 
         return request
 
 
-    def hwd_update_paragraph_style(self, si, ei, mag):
-        """
-        Convert table border to white colour so that it become invisible. 
-        In future we can add more functionality. 
-        """
+     def hwd_update_table_paragraph_style(self, si, ei, preset_font_style):
+         """
+         Convert table border to white colour so that it become invisible.
+         In future we can add more functionality.
+         """
 
-        request = [{
-                'updateParagraphStyle': {
-                    'paragraphStyle': {
-                        'borderLeft': {
-                            'padding': {
-                                'magnitude': mag,
-                                'unit': 'PT'
-                            }
-                        }
-                    },
-                    'fields': 'borderLeft',
-                    'range': {
-                          'startIndex': si,
-                          'endIndex':  ei
-                    }
-                }
-            }
-            ]
+         request = [{
+                 'updateParagraphStyle': {
+                     'paragraphStyle': {
+                         'namedStyleType': preset_font_style,
+                         'direction': 'LEFT_TO_RIGHT',
+                         'alignment': 'START',
+                     },
+                     'fields': '*',
+                     'range': {
+                           'startIndex': si,
+                           'endIndex':  ei
+                     }
+                 }
+             }]
 
-        return request
+         return request
 
 
     def hwd_modify_table_cell_style(self, r, c, t_idx, fg):
@@ -321,8 +315,7 @@ class HWDocs:
                       'index': t_idx
                       }
                 }
-            }
-            ]
+            }]
 
         return request
 
@@ -369,7 +362,7 @@ class HWDocs:
         document body.
         """
 
-        return [{
+        request = [{
            "updateTextStyle": {
             "textStyle": {
              "link": {
@@ -382,6 +375,8 @@ class HWDocs:
             },
             "fields": "link"
         }}]
+
+        return request
 
 
     def hwd_get_text_range_idx(self, doc_id, match_text):
@@ -404,6 +399,29 @@ class HWDocs:
                         startIdx = e.get('startIndex')
                         endIdx = e.get('endIndex')
 
+
+        if (not startIdx) and (not endIdx):
+            for d in data:
+                tbl = d.get('table')
+                if tbl is None:
+                    continue
+                else:
+                    t_rows = tbl.get('tableRows')
+                    for tr in t_rows:
+                        t_cells = tr.get('tableCells')
+                        for tc in t_cells:
+                            content = tc.get('content')
+                            for c in content:
+                                elements = c.get('paragraph').get('elements')
+                                for e in elements:
+                                    text_run = e.get('textRun')
+                                    if text_run is None:
+                                        continue
+                                    content = text_run.get('content')
+                                    if match_text in content:
+                                        startIdx = e.get('startIndex')
+                                        endIdx = e.get('endIndex')
+
         return startIdx, endIdx
 
 
@@ -414,6 +432,38 @@ class HWDocs:
 
          result = self.docs_service.documents().batchUpdate(
              documentId=doc_id, body={'requests': requests}).execute()
+
+
+
+    def hwd_create_exp_table(self, doc_id, r, c, si, exp_string):
+        self.hwd_create_table_at_index(doc_id, r, c, si)
+
+         si += 1
+         requests = []
+         requests.append(self.modify_table_columns_property(si, 0, 91.5))
+         requests.append(self.modify_table_columns_property(si, 1, 450))
+         requests.append(self.modify_table_cell_style(1, 2, si))
+
+         si += 3
+         req, idx = self.insert_text_in_table(si, 'Experiences')
+         requests.append(req)
+
+         requests.append(self.hwd_update_table_paragraph_style(si, si+idx, 'HEADING_5'))
+         si += idx + 2
+
+         req, idx = self.insert_text_in_table(si, exp_string)
+         requests.append(req)
+         si += idx
+
+         requests.append(self.insert_img(si))
+
+         requests.append(self.hwd_update_table_paragraph_style(si, si+idx, 'HEADING_2'))
+         si += idx + 2
+
+         self.hwd_batch_update(doc_id, requests)
+
+         return si
+
 
 
     def get_json(self, doc_id):
