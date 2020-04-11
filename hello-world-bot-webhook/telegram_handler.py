@@ -161,6 +161,7 @@ class TBOT:
         button_list = [
                 InlineKeyboardButton('By Countries', callback_data='TELEGRAM_BY_COUNTRY ' + continent),
                 InlineKeyboardButton('By Experience', callback_data='TELEGRAM_BY_EXPERIENCE ' + continent),
+                InlineKeyboardButton('By Destination', callback_data='TELEGRAM_BY_DESTINATION ' + continent),
             ]
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
         return reply_markup
@@ -769,14 +770,8 @@ class TBOT:
 
 
         # Find the write index
-        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'Trip Plan')
+        _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'Make changes to the plan based on your convenience')
 
-        section_description = 'Make changes to the plan based on your convenience.\n'
-        req, idx = self.hwdocs.hwd_insert_text(wr_idx, section_description)
-        request.append(req)
-        req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto Mono', 10, 300, '#999999')
-        request.append(req)
-        wr_idx += idx 
         prev_idx = 0
         element = -1
 
@@ -790,7 +785,6 @@ class TBOT:
                 request.append(req)
                 req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 18, 400, '#ffffff', '#999999')
                 request.append(req)
-                #request.append(self.hwdocs.hwd_update_paragraph_style(wr_idx, wr_idx + idx, 18))
                 prev_exp_str = curr_exp
                 wr_idx += idx
 
@@ -823,7 +817,7 @@ class TBOT:
                     
 
             self.hwdocs.hwd_batch_update(doc_id, request)
-
+            
             request = []
             if elements_counts[element]:
                 req, idx = self.hwdocs.hwd_insert_text(wr_idx, '____________')
@@ -863,23 +857,23 @@ class TBOT:
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, rec['TopSights'])
                     request.append(req)
                     request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, True, False, False, 'Roboto', 12, 700))
-
                 wr_idx += idx + 2 + 1
             
             else:
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n\n')
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n')
                 request.append(req)
                 req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto Mono', 10, 400, '#434343')
                 request.append(req)
 
         self.hwdocs.hwd_batch_update(doc_id, request)
-        self.logger.debug(self.hwdocs.get_json(doc_id))
 
         #
         # 2. Replace the text with the required values. 
         #
-        request = []
+        request.clear()
         request.append(self.hwdocs.hwd_replace_text('country', payload['Country']))
+        request.append(self.hwdocs.hwd_replace_text('trip_subtitle', ''))
+        request.append(self.hwdocs.hwd_replace_text('essential_subtitle', ''))
         request.append(self.hwdocs.hwd_replace_text('when_to_visit', self.hwbase.hwb_country_info_by_field(payload['Country'], 'WhenToVisit')))
         request.append(self.hwdocs.hwd_replace_text('native_currency', self.hwbase.hwb_country_info_by_field(payload['Country'], 'Currency')))
         request.append(self.hwdocs.hwd_replace_text('native_language', self.hwbase.hwb_country_info_by_field(payload['Country'], 'Languages')))
