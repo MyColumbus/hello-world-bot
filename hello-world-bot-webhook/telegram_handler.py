@@ -25,7 +25,6 @@ from telegram import InlineKeyboardButton,InlineKeyboardMarkup,KeyboardButton,Re
 
 class TBOT:
     __tbot_token = '907125689:AAHZ__kBMDydgVL9jc8B4qUS37Dp-mcrQXM'
-    #__tbot_token = '1TL14O6C5hEZOfK19lnnJsLpvH0Xgl3ACQLaUd_cce-0' ## Ivan's new design
     __flag_offset = 127462 - ord('A')
 
     def __init__(self):
@@ -162,8 +161,6 @@ class TBOT:
         button_list = [
                 InlineKeyboardButton('By Countries', callback_data='TELEGRAM_BY_COUNTRY ' + continent),
                 InlineKeyboardButton('By Experience', callback_data='TELEGRAM_BY_EXPERIENCE ' + continent),
-                InlineKeyboardButton('Bucketlist Destination', callback_data='TELEGRAM_BY_DESTINATION ' + continent),
-                InlineKeyboardButton('Saved Trips', callback_data='Show My Trips')
             ]
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
         return reply_markup
@@ -361,7 +358,7 @@ class TBOT:
             continent_text = ''
 
         reply_markup = self.tbot_main_menu(continent)
-        self.updater.bot.send_message(chat_id=chat_id, text='\n\n' + continent_text + '\n\nHow would you like to explore *' + continent.upper() + '*?', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+        self.updater.bot.edit_message_text(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'), text='\n\n' + continent_text + '\n\nHow would you like to explore *' + continent.upper() + '*?', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
 
     ##
@@ -434,21 +431,25 @@ class TBOT:
             self.hwdb.hwdb_user_session_delete(chat_id)
             self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', 'NULL', continent, 'I')
             reply_markup = self.tbot_experience_menu(eval('self.all_' + continent + '_experiences'))
-            self.updater.bot.sendMessage(chat_id=chat_id,
+            self.updater.bot.edit_message_text(chat_id=chat_id,
+                    message_id=payload.get('callback_query').get('message').get('message_id'),
                     text='\n\nPlease select the experiences in *' + continent + '* you would like to have during your vacation and hit *DONE*.', 
                         reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
         elif 'TELEGRAM_BY_COUNTRY' in payload.get('callback_query').get('data'):
             self.hwdb.hwdb_user_session_delete(chat_id)
             reply_markup = self.tbot_by_country_menu(eval('self.all_' + continent + '_countries'))
-            self.updater.bot.send_message(chat_id=chat_id,
-                    text='\n\nPick the country of your preference :', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+            self.updater.bot.edit_message_text(chat_id=chat_id, 
+                    message_id=payload.get('callback_query').get('message').get('message_id'),
+                    text='\n\nPick the country of your preference :', reply_markup=reply_markup, 
+                    parse_mode=telegram.ParseMode.MARKDOWN)
 
         elif 'TELEGRAM_BY_DESTINATION' in payload.get('callback_query').get('data'):
             self.hwdb.hwdb_user_session_delete(chat_id)
             sess_data = self.hwdb.hwdb_user_session_select(chat_id)
             self.hwdb.hwdb_user_session_upsert(chat_id, sess_data['country'], 'TELEGRAM_BY_DESTINATION', sess_data['category'], continent, 'I')
-            self.updater.bot.send_message(chat_id=chat_id,
+            self.updater.bot.edit_message_text(chat_id=chat_id,
+                    message_id=payload.get('callback_query').get('message').get('message_id'),
                     text='\n\nText me your bucketlist *Destination* in ' + continent.upper() + '?', parse_mode=telegram.ParseMode.MARKDOWN)
 
 
@@ -734,7 +735,8 @@ class TBOT:
             continent_text = ''
 
         reply_markup = self.tbot_main_menu(continent)
-        self.updater.bot.send_message(chat_id=chat_id, text='\n\n' + continent_text + '\n\nHow would you like to explore *' + continent.upper() + '*?', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+        self.updater.bot.edit_message_text(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'), text='\n\n' + continent_text + '\n\nHow would you like to explore *' + continent.upper() + '*?', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+        
 
 
 
@@ -769,10 +771,10 @@ class TBOT:
         # Find the write index
         _, wr_idx = self.hwdocs.hwd_get_text_range_idx(doc_id, 'Trip Plan')
 
-        section_description = '(Make changes to the plan based on your convenience.)'
+        section_description = 'Make changes to the plan based on your convenience.\n'
         req, idx = self.hwdocs.hwd_insert_text(wr_idx, section_description)
         request.append(req)
-        req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, True, False, 'Roboto Mono', 10, 400, '#434343')
+        req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto Mono', 10, 300, '#999999')
         request.append(req)
         wr_idx += idx 
         prev_idx = 0
@@ -784,9 +786,9 @@ class TBOT:
 
             curr_exp = ', '.join(rec['Experiences'])
             if curr_exp != prev_exp_str:
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + ':  ' + curr_exp + '  :')
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n' + ' ' + curr_exp + '.\n')
                 request.append(req)
-                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Arial', 11, 400, '#ffffff', '#3c91f4')
+                req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 18, 400, '#ffffff', '#999999')
                 request.append(req)
                 #request.append(self.hwdocs.hwd_update_paragraph_style(wr_idx, wr_idx + idx, 18))
                 prev_exp_str = curr_exp
@@ -806,17 +808,17 @@ class TBOT:
                     # Add one extra row for header.
                     request.append(self.hwdocs.hwd_create_table_at_index(elements_counts[element] + 1, 2, wr_idx))
                     wr_idx += 1  # This is required
-                    request.append(self.hwdocs.hwd_modify_table_columns_property(wr_idx))
+                    request.append(self.hwdocs.hwd_modify_table_columns_property(wr_idx, 0, 100))
                     request.append(self.hwdocs.hwd_modify_table_cell_style(elements_counts[element], 2, wr_idx, '#ffffff'))
                     wr_idx += 3
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, 'Date & Time')
                     request.append(req)
-                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 11, 500, '#999999'))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 11, 400, '#999999'))
                     wr_idx += (idx + 2) 
 
                     req, idx = self.hwdocs.hwd_insert_text(wr_idx, 'Things To Do')
                     request.append(req)
-                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 11, 500, '#999999'))
+                    request.append(self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto', 11, 400, '#999999'))
                     wr_idx += (idx + 2 + 1) 
                     
 
@@ -849,7 +851,7 @@ class TBOT:
                     sun = Sun(rec['Latitude'], rec['Longitude'])
                     sr = sun.get_sunrise_time()
                     ss = sun.get_sunset_time()
-                    sr_ss = 'Sun raise at {} and gets down at {} UTC'.format(sr.strftime('%H:%M'), ss.strftime('%H:%M'))
+                    sr_ss = 'Sunrise {}, Sunset {} UTC'.format(sr.strftime('%H:%M'), ss.strftime('%H:%M'))
                     sub_str += sr_ss if not len(sr_ss) else ', ' + sr_ss
 
                 if len(sub_str):

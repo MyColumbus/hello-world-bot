@@ -21,7 +21,8 @@ from google.auth.transport.requests import Request
 logger = logging.getLogger()
 
 class HWDocs:
-    __itinerary_templates = ['1fMfGG-MlwQz1uafKV2j85DbjOZC9TN0pzBZR-dXOK0Q']
+    #__itinerary_templates = ['1fMfGG-MlwQz1uafKV2j85DbjOZC9TN0pzBZR-dXOK0Q']
+    __itinerary_templates = ['1TL14O6C5hEZOfK19lnnJsLpvH0Xgl3ACQLaUd_cce-0'] #Ivan's new design
     __drive_scopes = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/documents']
 
     def __init__(self):
@@ -210,7 +211,7 @@ class HWDocs:
         return request
 
 
-     def hwd_update_table_paragraph_style(self, si, ei, preset_font_style):
+    def hwd_update_table_paragraph_style(self, si, ei, preset_font_style):
          """
          Convert table border to white colour so that it become invisible.
          In future we can add more functionality.
@@ -432,37 +433,6 @@ class HWDocs:
 
          result = self.docs_service.documents().batchUpdate(
              documentId=doc_id, body={'requests': requests}).execute()
-
-
-
-    def hwd_create_exp_table(self, doc_id, r, c, si, exp_string):
-        self.hwd_create_table_at_index(doc_id, r, c, si)
-
-         si += 1
-         requests = []
-         requests.append(self.modify_table_columns_property(si, 0, 91.5))
-         requests.append(self.modify_table_columns_property(si, 1, 450))
-         requests.append(self.modify_table_cell_style(1, 2, si))
-
-         si += 3
-         req, idx = self.insert_text_in_table(si, 'Experiences')
-         requests.append(req)
-
-         requests.append(self.hwd_update_table_paragraph_style(si, si+idx, 'HEADING_5'))
-         si += idx + 2
-
-         req, idx = self.insert_text_in_table(si, exp_string)
-         requests.append(req)
-         si += idx
-
-         requests.append(self.insert_img(si))
-
-         requests.append(self.hwd_update_table_paragraph_style(si, si+idx, 'HEADING_2'))
-         si += idx + 2
-
-         self.hwd_batch_update(doc_id, requests)
-
-         return si
 
 
 
