@@ -13,6 +13,7 @@ import pytz
 import json
 from datetime import datetime
 from itertools import combinations
+from fuzzywuzzy import process
 
 from logs import HWLogs
 HWLogs(logging.DEBUG)
@@ -345,10 +346,28 @@ class HWBase:
         return list(df_country.columns.values)
 
 
+    def hwb_all_experiences_for_by_destination(self, continent, destination):
+        """
+        Return all the categories for a destination and the country it belongs to. 
+        """
+        dst_exp_list = []
+
+        df_var = eval('self.df_dest_' + continent.lower())
+        if not df_var.empty:
+            df_dst = df_var[(df_var['Destination'] == destination) | 
+                            (df_var['Destination'].str.contains(destination + ':'))]
+            country = df_dst.Country.unique().tolist()[0]
+
+            df_dst = df_dst.drop(['Rank', 'Destination', 'Country'], axis=1)
+            df_dst = self.hwb_drop_constant_value_column(df_dst)
+            dst_exp_list = list(df_dst.columns.values)
+            return dst_exp_list, country
+
+
+
     def hwb_all_experiences_for_a_destination(self, continent, destination):
         """
         Return all the categories for a destination and the country it belongs to. 
-        Destination search is kept open and hence we have to seach it in all the continents. 
         """
         dst_exp_list = []
 
@@ -356,8 +375,8 @@ class HWBase:
         if not df_var.empty:
             df_dst = df_var[df_var['Destination'] == destination]
             country = df_dst.Country.unique().tolist()[0]
-            df_dst = self.hwb_drop_constant_value_column(df_dst)
             df_dst = df_dst.drop(['Rank'], axis=1)
+            df_dst = self.hwb_drop_constant_value_column(df_dst)
             dst_exp_list = list(df_dst.columns.values)
             return dst_exp_list, country
 
@@ -366,11 +385,49 @@ class HWBase:
         """
         Return all the destinations per continent.
         """
-        all_destinations = []
+        all_dest = []
+        all_cleaned_dest = []
 
         df_var = eval('self.df_dest_' + continent.lower())
-        all_destinations = df_var.Destination.unique().tolist()
-        return all_destinations 
+        all_dest = df_var.Destination.unique().tolist()
+
+        for d in all_dest:
+            if ':' in d:
+                all_cleaned_dest.append(d.split(':')[0])
+            else:
+                all_cleaned_dest.append(d)
+
+        all_cleaned_dest = list(set(all_cleaned_dest))
+
+        return all_cleaned_dest 
+
+
+    def hwb_fuzz_extract(self, continent, match_string, match_with):
+        """
+        Using fuzzywuzzy find the matched destionations.
+        """
+        suggest_destinations = []
+        found_dest = ''
+        df_status = False
+
+        matched_destinations = process.extract(match_string, match_with)
+        df_var = eval('self.df_dest_' + continent.lower())
+
+        if matched_destinations[0][1] == 100:
+            found_dest = matched_destinations[0][0]
+            if not df_var[(df_var['Destination'] == found_dest) | (df_var['Destination'].str.contains(found_dest + ':'))].empty:
+                df_status = True
+            return found_dest, df_status, suggest_destinations
+
+        logger.debug('Suggested destination {0}'.format(matched_destinations))
+
+        for i in range(len(matched_destinations)):
+            if not df_var[(df_var['Destination'] == matched_destinations[i][0]) | (df_var['Destination'].str.contains(matched_destinations[i][0] + ':'))].empty:
+                suggest_destinations.append(matched_destinations[i][0])
+
+        logger.debug('Matched place {0}'.format(suggest_destinations))
+        
+        return found_dest, df_status, suggest_destinations
 
 
     def hwb_fetch_subexp_to_exp(self, experiences):
@@ -685,6 +742,12 @@ class HWBase:
         experiences = payload['Experiences']
         continent = self.hwb_get_continent_for_countries(country)
 
+        num_days = int(payload['NumDays'])
+        num_adults = payload['NumAdults']
+        num_kids = payload['NumKids']
+
+        num_days = 15 if num_days > 15 else num_days
+
         subexp_list = self.hwb_fetch_subexp_to_exp(experiences)
 
         # Destination.csv has all the possible combination of the filters. Hence always match 'all'.
@@ -693,28 +756,33 @@ class HWBase:
         df_dest_var = eval('self.df_dest_' + continent.lower())
         df_tsights_var = eval('self.df_tsights_' + continent.lower())
 
-        df_a_destination = df_dest_var[(df_dest_var['Country'] == country) & (df_dest_var['Destination'] == destination)]
+        df_a_destination = df_dest_var[(df_dest_var['Country'] == country) & ((df_dest_var['Destination'] == destination) |
+                                                                              (df_dest_var['Destination'].str.contains(destination + ':')))]
+
+        num_exp = len(subexp_list)
+        days_per_exp = int(num_days/num_exp) + 1
+        logger.debug('Days per destination : {0}'.format(days_per_exp))
 
         for cat,subcat in subexp_list.items():
             if len(subcat):
-                dest_exp_list, _ = self.hwb_all_experiences_for_a_destination(continent, destination)
+                dest_exp_list, _ = self.hwb_all_experiences_for_by_destination(continent, destination)
                 c_list = list(set(dest_exp_list) - set(subcat))
-                df_local = df_a_destination[(df_a_destination[c_list] == False).all(axis=1) & (df_a_destination[subcat] == True).all(axis=1)]
-                df_local = self.hwb_drop_constant_value_column(df_local)
+                df_local = df_a_destination[(df_a_destination[c_list] == False).all(axis=1) & 
+                                            (df_a_destination[subcat] == True).all(axis=1)]
+                if df_local.empty:
+                    df_local = df_a_destination[(df_a_destination[c_list] == False).all(axis=1) & 
+                                                (df_a_destination[subcat] == True).any(axis=1)]
+
 
                 if df_local.empty:
-                    sugg = {}
-                    top_sugg = self.hwb_a_destination_experience_combinations(continent, subcat, len(subcat))
-                    sugg['Suggestion'] = top_sugg
-                    ret_suggestions.append(sugg)
-                    logger.info('Top expereinces suggestions to user {0}'.format(list(top_sugg[0])))
+                    logger.error("We shouldn't be here")
                     err = 204
 
                 else:
                     # Destionation for a country might not be rank '1', hence sort the stop most. 
-                    df_local = df_local[df_local['Rank'] == 1]
-                    df_local = df_local.sort_values(['Rank'], ascending=True)
-                    top_destionations = df_local.Destination.unique().tolist()
+                    df_tmp = df_local.sort_values(['Rank'], ascending=True)
+                    top_destionations = df_tmp.Destination.unique().tolist()
+                    logger.debug('Top Destinations from df_local: {0}'.format(top_destionations))
                     
                     # Find top places
                     df_ts = df_tsights_var[df_tsights_var['Country'] == country]
@@ -729,6 +797,7 @@ class HWBase:
                         if not df_tss.empty:
                             print('NOT GOOD : Nothing to show in TopSights')
                             df_ts = df_tss
+
 
                     df_ts = df_ts.sort_values(['Rating'], ascending=False)
                     df_ts = df_ts.sort_values(['NumberOfReview'], ascending=False)
@@ -751,9 +820,15 @@ class HWBase:
                             ts_data['TypicalTimeSpent'] = row['TypicalTimeSpent']
                             ts_data['Kid-friendly'] = 'Yes' if row['Kid-friendly'] else ''
                             ts_data['Amusement-Parks'] = 'Yes' if row['Amusement Parks'] else ''
+                            
+                            if row['Latitude'] and row['Longitude']:
+                                ts_data['Latitude'] = row['Latitude']
+                                ts_data['Longitude'] = row['Longitude']
+
                             ret_data.append(ts_data)
 
         return ret_suggestions, ret_data, err
+
 
 
     def hwb_destinations_itinerary_data(self, payload):

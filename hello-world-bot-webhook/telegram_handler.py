@@ -15,7 +15,6 @@ from flask import request
 from inference import HWBase
 from hw_db.database_wrapper import HWDB
 from hw_docs.hw_drive_auth import HWDocs
-from fuzzywuzzy import process
 
 import telegram
 from telegram.ext import Updater
@@ -76,14 +75,6 @@ class TBOT:
         return chr(ord(code[0]) + self.__flag_offset) + chr(ord(code[1]) + self.__flag_offset)
 
 
-    def tbot_fuzz_extract(self, match_string, match_with):
-        """
-        Using fuzzywuzzy find the matched string.
-        """
-        matched_string = process.extract(match_string, match_with, limit=1)
-        self.logger.debug('Matched place {0}'.format(matched_string[0]))
-        return matched_string[0][0]
-
 
     def tbot_get_location_n_contact(self):
         """
@@ -133,6 +124,21 @@ class TBOT:
             else:
                 button_list.append(InlineKeyboardButton(s, callback_data=s))
         button_list.append(InlineKeyboardButton("DONE", callback_data='DONE'))
+
+        reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
+        return reply_markup
+
+
+    def tbot_do_you_mean_destinations_menu(self, sugg_dest, continent):
+        """
+        User may mis spelled or searching for a destination.
+        """
+        button_list = []
+
+        sugg_dest.sort()
+        for s in sugg_dest:
+            button_list.append(InlineKeyboardButton(s, callback_data=s))
+        button_list.append(InlineKeyboardButton('Try Again', callback_data='TELEGRAM_BY_DESTINATION ' + continent))
 
         reply_markup = InlineKeyboardMarkup(self.tbot_build_menu(button_list, n_cols=2))
         return reply_markup
@@ -631,7 +637,7 @@ class TBOT:
                     self.hwdb.hwdb_user_session_upsert(chat_id, 'NULL', 'NULL', category, 'NULL', 'D')
 
                 rec = self.hwdb.hwdb_user_session_select(chat_id)
-                supported_cat, _ = self.hwbase.hwb_all_experiences_for_a_destination(sess_data['continent'], sess_data['destination'])
+                supported_cat, _ = self.hwbase.hwb_all_experiences_for_by_destination(sess_data['continent'], sess_data['destination'])
                 reply_markup = self.tbot_update_experience_menu(supported_cat, rec['category'])
                 self.updater.bot.edit_message_reply_markup(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'),
                         reply_markup=reply_markup)
@@ -640,7 +646,24 @@ class TBOT:
             self.logger.error('Unsupported callback message!')
 
 
+    def tbot_cb_bydestination_message(self, query_result, payload):
+        chat_id = payload.get('callback_query').get('from').get('id')
+        sess_data = self.hwdb.hwdb_user_session_select(chat_id)
 
+        destination = query_result.get('queryText')
+
+        supported_cat, country = self.hwbase.hwb_all_experiences_for_by_destination(sess_data['continent'], destination)
+        continent = self.hwbase.hwb_get_continent_for_countries(country)
+        self.logger.debug('Categories for country/destination {0}/{1} are {2}'.format(destination, country, supported_cat))
+
+        self.hwdb.hwdb_user_session_delete(chat_id)
+        self.hwdb.hwdb_user_session_upsert(chat_id, country, destination, 'NULL', continent, 'I')
+
+        reply_markup = self.tbot_experience_menu(supported_cat)
+        self.updater.bot.edit_message_text(chat_id=chat_id, message_id=payload.get('callback_query').get('message').get('message_id'),
+                text='\n*' + destination + '* is in ' + country.upper() + ', has following experiences. '
+                'Once you select the expereinces hit DONE to get your itinerary created.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+        
 
     #############################
     # Callback Intent Table
@@ -652,6 +675,7 @@ class TBOT:
             'input.telegram_by_country_name': tbot_cb_by_options,
             'input.find_places': tbot_cb_find_places,
             'find_places.find_places-followup': tbot_cb_find_places,
+            'input.bydestination': tbot_cb_bydestination_message 
     }
 
 
@@ -673,7 +697,8 @@ class TBOT:
             (query_result.get('action') == 'find_places.find_places-followup') or
             (query_result.get('action') == 'input.find_places') or
             (query_result.get('action') == 'input.when_to_visit') or
-            (query_result.get('action') == 'input.activites_to_do')):
+            (query_result.get('action') == 'input.activites_to_do') or
+            (query_result.get('action') == 'input.bydestination')):
 
             self.logger.debug('Intent without callback : {0}'.format(query_result.get('action')))
             self.tbot_call_callback_intents_methods(query_result, payload)
@@ -691,7 +716,8 @@ class TBOT:
             (query_result.get('action') == 'input.find_places') or
             (query_result.get('action') == 'settings.country-name') or
             (query_result.get('action') == 'input.pick_continent') or
-            (query_result.get('action') == 'create_itinerary.ci_travel_date.ci_people')):
+            (query_result.get('action') == 'create_itinerary.ci_travel_date.ci_people') or
+            (query_result.get('action') == 'input.bydestination')):
 
             self.logger.debug('Intent without callback : {0}'.format(query_result.get('action')))
             self.tbot_call_normal_intents_methods(query_result, payload)
@@ -860,7 +886,7 @@ class TBOT:
                 wr_idx += idx + 2 + 1
             
             else:
-                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n')
+                req, idx = self.hwdocs.hwd_insert_text(wr_idx, '\n\n')
                 request.append(req)
                 req = self.hwdocs.hwd_format_text(wr_idx, wr_idx + idx, False, False, False, 'Roboto Mono', 10, 400, '#434343')
                 request.append(req)
@@ -872,8 +898,8 @@ class TBOT:
         #
         request.clear()
         request.append(self.hwdocs.hwd_replace_text('country', payload['Country']))
-        request.append(self.hwdocs.hwd_replace_text('trip_subtitle', ''))
-        request.append(self.hwdocs.hwd_replace_text('essential_subtitle', ''))
+        request.append(self.hwdocs.hwd_replace_text('trip_subtitle', 'Itinerary during the trip'))
+        request.append(self.hwdocs.hwd_replace_text('essential_subtitle', 'Information for your smooth trip'))
         request.append(self.hwdocs.hwd_replace_text('when_to_visit', self.hwbase.hwb_country_info_by_field(payload['Country'], 'WhenToVisit')))
         request.append(self.hwdocs.hwd_replace_text('native_currency', self.hwbase.hwb_country_info_by_field(payload['Country'], 'Currency')))
         request.append(self.hwdocs.hwd_replace_text('native_language', self.hwbase.hwb_country_info_by_field(payload['Country'], 'Languages')))
@@ -922,28 +948,72 @@ class TBOT:
         if msg == '/Start':
             self.tbot_start_command(query_result, payload)
 
-        elif sess_data['destination'] == 'TELEGRAM_BY_DESTINATION':
-            matched_destinations = self.tbot_fuzz_extract(msg, self.hwbase.hwb_all_destinations_per_continent(sess_data['continent']))
-            if msg.lower() != matched_destinations.lower():
-                self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nShowing destination : *' + matched_destinations + '*\n', parse_mode=telegram.ParseMode.MARKDOWN)
+        if sess_data['destination'] == 'TELEGRAM_BY_DESTINATION':
+            found_dest, df_status, sugg_destinations = self.hwbase.hwb_fuzz_extract(sess_data['continent'], msg, self.hwbase.hwb_all_destinations_per_continent(sess_data['continent']))
 
-            supported_cat, country = self.hwbase.hwb_all_experiences_for_a_destination(sess_data['continent'], matched_destinations)
-            continent = self.hwbase.hwb_get_continent_for_countries(country)
-            self.logger.debug('Categories for country/destination {0}/{1} are {2}'.format(matched_destinations, country, supported_cat))
+            if found_dest and df_status:
+                supported_cat, country = self.hwbase.hwb_all_experiences_for_by_destination(sess_data['continent'], found_dest)
+                continent = self.hwbase.hwb_get_continent_for_countries(country)
+                self.logger.debug('Categories for country/destination {0}/{1} are {2}'.format(found_dest, country, supported_cat))
 
-            self.hwdb.hwdb_user_session_delete(chat_id)
-            self.hwdb.hwdb_user_session_upsert(chat_id, country, matched_destinations, 'NULL', continent, 'I')
+                self.hwdb.hwdb_user_session_delete(chat_id)
+                self.hwdb.hwdb_user_session_upsert(chat_id, country, found_dest, 'NULL', continent, 'I')
 
-            reply_markup = self.tbot_experience_menu(supported_cat)
-            self.updater.bot.sendMessage(chat_id=chat_id,
-                    text='\n*' + matched_destinations + '* is in ' + country.upper() + ', has following experiences. ' 
-                    'Once you select the expereinces hit DONE to get your itinerary created.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+                reply_markup = self.tbot_experience_menu(supported_cat)
+                self.updater.bot.edit_message_text(chat_id=chat_id, message_id=payload.get('message_id'),
+                        text='\n*' + found_dest + '* is in ' + country.upper() + ', has following experiences. '
+                        'Once you select the expereinces hit DONE to get your itinerary created.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+            
+            elif found_dest and (not df_status):
+                self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nDestination *' + found_dest + '*, but without experiences\n', parse_mode=telegram.ParseMode.MARKDOWN)
+            
+            else:
+                reply_markup = self.tbot_do_you_mean_destinations_menu(sugg_destinations, sess_data['continent'])
+                self.updater.bot.sendMessage(chat_id=chat_id,
+                        text='\n Do you mean :', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
 
         else:
             self.logger.debug('Bad message Received : {0}'.format(msg))
             self.updater.bot.sendMessage(chat_id=chat_id, text="\n\nSorry i didn't get it, can you say that again?")
 
 
+    def tbot_bydestination_message(self, query_result, payload):
+        """
+        These are unknown messages and need to parse them.. 
+        """
+        chat_id = payload.get('chat').get('id')
+        sess_data = self.hwdb.hwdb_user_session_select(chat_id)
+
+        msg = payload.get('text')
+
+        if sess_data['destination'] == 'TELEGRAM_BY_DESTINATION':
+            found_dest, df_status, sugg_destinations = self.hwbase.hwb_fuzz_extract(sess_data['continent'], msg, self.hwbase.hwb_all_destinations_per_continent(sess_data['continent']))
+
+            if found_dest and df_status:
+                supported_cat, country = self.hwbase.hwb_all_experiences_for_by_destination(sess_data['continent'], found_dest)
+                continent = self.hwbase.hwb_get_continent_for_countries(country)
+                self.logger.debug('Categories for country/destination {0}/{1} are {2}'.format(found_dest, country, supported_cat))
+
+                self.hwdb.hwdb_user_session_delete(chat_id)
+                self.hwdb.hwdb_user_session_upsert(chat_id, country, found_dest, 'NULL', continent, 'I')
+
+                reply_markup = self.tbot_experience_menu(supported_cat)
+                self.updater.bot.sendMessage(chat_id=chat_id, message_id=payload.get('message_id'),
+                        text='\n*' + found_dest + '* is in ' + country.upper() + ', has following experiences. '
+                        'Once you select the expereinces hit DONE to get your itinerary created.', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+            
+            elif found_dest and (not df_status):
+                self.updater.bot.sendMessage(chat_id=chat_id, text='\n\nDestination *' + found_dest + '*, but without experiences\n', parse_mode=telegram.ParseMode.MARKDOWN)
+            
+            else:
+                reply_markup = self.tbot_do_you_mean_destinations_menu(sugg_destinations, sess_data['continent'])
+                self.updater.bot.sendMessage(chat_id=chat_id,
+                        text='\n Do you mean :', reply_markup=reply_markup, parse_mode=telegram.ParseMode.MARKDOWN)
+
+
+        else:
+            self.logger.debug('Bad message Received : {0}'.format(msg))
+            self.updater.bot.sendMessage(chat_id=chat_id, text="\n\nSorry i didn't get it, can you say that again?")
 
 
     #############################
@@ -955,6 +1025,7 @@ class TBOT:
             'settings.country-name' : tbot_user_settings,
             'input.pick_continent' : tbot_continent_menu,
             'create_itinerary.ci_travel_date.ci_people': tbot_create_itinerary_exp_menu,
+            'input.bydestination': tbot_bydestination_message
     }
 
 
