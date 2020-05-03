@@ -35,7 +35,7 @@ sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev p
 
 5. Create Python Virtual environment: 
 ```
-sudo apt install python3-venv
+sudo apt-get install python3-venv
 mkdir hwbot
 cd hwbot
 python3.6 -m venv hwbot
