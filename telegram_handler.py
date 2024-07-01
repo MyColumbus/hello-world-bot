@@ -23,7 +23,7 @@ from telegram import InlineKeyboardButton,InlineKeyboardMarkup,KeyboardButton,Re
 
 
 class TBOT:
-    __tbot_token = '907125689:AAHZ__kBMDydgVL9jc8B4qUS37Dp-mcrQXM'
+    __tbot_token = ''  # Add you telegram token here.
     __flag_offset = 127462 - ord('A')
 
     def __init__(self):
